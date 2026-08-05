@@ -58,5 +58,8 @@ $canon    = isset($page_canonical) ? h($page_canonical) : $default_canonical;
 <?php if (!empty($cargar_contacto_js)): ?>
 <script defer src="/assets/js/contacto.js"></script>
 <?php endif; ?>
+<?php if (!empty($cargar_articulo_js)): ?>
+<script defer src="/assets/js/articulo.js"></script>
+<?php endif; ?>
 
 </head>

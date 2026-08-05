@@ -59,7 +59,7 @@
         · <a href="/privacidad.php">Política de privacidad</a>
       </span>
       <span>Desarrollado por
-        <a href="https://ingarenas.com" target="_blank" rel="noopener">ingarenas.com</a>
+        <a href="https://arenasdev.com" target="_blank" rel="noopener">ArenasDev.com</a>
       </span>
     </div>
   </div>

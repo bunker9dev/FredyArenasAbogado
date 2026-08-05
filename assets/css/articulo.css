@@ -1,0 +1,202 @@
+/* ============================================================
+   articulo.css — Página de artículo individual
+   ============================================================ */
+
+/* ── Cabecera del artículo ──────────────────────────────── */
+.art-back {
+  display:     inline-flex;
+  align-items: center;
+  gap:         .5rem;
+  font-size:   .82rem;
+  font-weight: 500;
+  color:       var(--ink-soft);
+  margin-top:  clamp(2rem, 4vw, 3rem);
+  transition:  gap var(--tr-fast), color var(--tr-fast);
+}
+.art-back:hover { gap: .8rem; color: var(--ink); }
+
+.art-head { padding: 1.5rem 0 2rem; }
+.art-head h1 {
+  font-size:     clamp(2.1rem, 4.6vw, 3.3rem);
+  margin:        1.1rem 0 1.4rem;
+  line-height:   1.1;
+}
+
+.art-meta {
+  display:     flex;
+  flex-wrap:   wrap;
+  align-items: center;
+  gap:         .6rem 1rem;
+  font-size:   .83rem;
+  color:       var(--ink-soft);
+}
+.art-meta__who {
+  display:     flex;
+  align-items: center;
+  gap:         .55rem;
+  font-weight: 500;
+  color:       var(--ink);
+}
+.art-meta__avatar {
+  width:         30px;
+  height:        30px;
+  border-radius: 50%;
+  object-fit:    cover;
+  border:        1px solid var(--line);
+  background:    var(--paper-2);
+}
+.art-meta__sep {
+  width:      1px;
+  height:     16px;
+  background: var(--line);
+}
+.art-meta__views {
+  display:     inline-flex;
+  align-items: center;
+  gap:         .4rem;
+}
+.art-meta__views svg { stroke: var(--gold); }
+
+/* ── Imagen hero del artículo ───────────────────────────── */
+.art-hero {
+  width:         min(1000px, 92vw);
+  margin:        0 auto clamp(2.5rem, 5vw, 3.5rem);
+  aspect-ratio:  16 / 8;
+  overflow:      hidden;
+  border-radius: var(--r-card);
+  background:    var(--paper-2);
+}
+.art-hero img {
+  width:      100%;
+  height:     100%;
+  object-fit: cover;
+}
+
+/* ── Columna de contenido ───────────────────────────────── */
+.art-col { width: min(720px, 90vw); margin-inline: auto; }
+
+.art-body { line-height: var(--lh-loose); }
+.art-body p  { margin-bottom: 1.35rem; color: var(--ink-soft); }
+.art-body p:first-child { color: var(--ink); font-size: 1.08rem; }
+.art-body h2 { font-size: 1.7rem; margin: 2.6rem 0 1rem; color: var(--ink); }
+.art-body ul, .art-body ol { margin: 0 0 1.35rem 1.4rem; }
+.art-body li { margin-bottom: .5rem; color: var(--ink-soft); }
+
+.art-body .pull {
+  font-family:  var(--font-serif);
+  font-style:   italic;
+  font-size:    1.5rem;
+  line-height:  1.35;
+  color:        var(--ink);
+  border-left:  2px solid var(--gold);
+  padding:      .3rem 0 .3rem 1.5rem;
+  margin:       2rem 0;
+}
+
+/* ── Barra de compartir ─────────────────────────────────── */
+.art-share {
+  display:       flex;
+  align-items:   center;
+  gap:           .7rem;
+  flex-wrap:     wrap;
+  padding:       1.6rem 0;
+  border-top:    1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin:        clamp(2.5rem, 5vw, 3.5rem) 0 0;
+}
+.art-share__lbl {
+  font-size:      var(--fs-label);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color:          var(--ink-soft);
+  margin-right:   .3rem;
+}
+.share-btn {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           .5rem;
+  font-size:     .83rem;
+  font-weight:   500;
+  padding:       .55rem 1rem;
+  border:        1px solid var(--line);
+  border-radius: var(--r-pill);
+  cursor:        pointer;
+  background:    transparent;
+  color:         var(--ink);
+  font-family:   var(--font-sans);
+  transition:    border-color var(--tr-fast), color var(--tr-fast);
+}
+.share-btn:hover             { border-color: var(--ink); }
+.share-btn--wa:hover         { border-color: #25d366; color: #128c3e; }
+.share-btn svg               { width: 16px; height: 16px; }
+
+/* ── ¿Te resultó útil? ───────────────────────────────────── */
+.art-useful {
+  text-align:    center;
+  padding:       clamp(2.5rem, 5vw, 3.5rem) 0;
+  border-bottom: 1px solid var(--line);
+}
+.art-useful__q {
+  font-family:   var(--font-serif);
+  font-size:     1.25rem;
+  font-style:    italic;
+  margin-bottom: 1.3rem;
+  color:         var(--ink);
+}
+.art-useful__btns { display: inline-flex; gap: .9rem; }
+.useful-btn {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           .5rem;
+  font-size:     .9rem;
+  font-weight:   600;
+  padding:       .65rem 1.5rem;
+  border:        1px solid var(--line);
+  border-radius: var(--r-btn);
+  cursor:        pointer;
+  background:    var(--paper);
+  color:         var(--ink);
+  font-family:   var(--font-sans);
+  transition:    border-color var(--tr-fast), transform var(--tr-fast);
+}
+.useful-btn:hover            { border-color: var(--ink); transform: translateY(-1px); }
+.useful-btn svg              { width: 17px; height: 17px; }
+.art-useful__thanks {
+  font-family:  var(--font-serif);
+  font-style:   italic;
+  font-size:    1.2rem;
+  color:        var(--gold);
+  display:      none;
+}
+.art-useful.done .art-useful__btns,
+.art-useful.done .art-useful__q   { display: none; }
+.art-useful.done .art-useful__thanks { display: block; }
+
+/* ── Artículos relacionados ─────────────────────────────── */
+.art-related { padding: clamp(3rem, 6vw, 4.5rem) 0; }
+.art-related h2 { font-size: 1.6rem; margin-bottom: 1.8rem; }
+
+/* ── Toast notificación ─────────────────────────────────── */
+.toast {
+  position:   fixed;
+  bottom:     24px;
+  left:       50%;
+  transform:  translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color:      var(--paper);
+  font-size:  .85rem;
+  padding:    .7rem 1.2rem;
+  border-radius: var(--r-card);
+  opacity:    0;
+  pointer-events: none;
+  transition: opacity .28s, transform .28s;
+  z-index:    80;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 860px) {
+  .art-col { width: 90vw; }
+  .art-hero { width: 90vw; }
+  .art-related .cards { grid-template-columns: 1fr; }
+}

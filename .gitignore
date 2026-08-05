@@ -1,0 +1,124 @@
+# ============================================================
+#  .gitignore — fredyarenasabogado.com
+# ============================================================
+
+
+# ── Credenciales y configuración sensible ───────────────────
+includes/config/database.php
+includes/config/admin.php
+crear_admin.php
+.env
+.env.*
+*.env
+
+
+# ── Sistema operativo ────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+
+# ── Editores e IDEs ──────────────────────────────────────────
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+
+# ── Logs y temporales de PHP / Apache ───────────────────────
+*.log
+error_log
+php_errorlog
+/tmp/
+/temp/
+
+
+# ── Control de sesiones PHP (bloqueos anti fuerza bruta) ────
+/tmp/fa_login_*.json
+
+
+# ── Imágenes subidas por el admin (van en el servidor,
+#    no en el repo — pueden pesar mucho y cambian seguido) ───
+/imagenes/
+/uploads/
+
+
+# ── Dependencias de Node (si algún día se usa un bundler) ───
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+
+# ── Build artifacts ──────────────────────────────────────────
+/dist/
+/build/
+
+
+# ── Composer (si se agregan librerías PHP) ───────────────────
+/vendor/
+composer.lock
+
+
+# ── Archivos de backup del hosting / cPanel ─────────────────
+*.bak
+*.backup
+*.orig
+*.old
+public_html.zip
+*.tar.gz
+*.zip
+
+
+# ── Mapas de fuentes (sourcemaps — no van a producción) ─────
+*.map
+
+
+# ── Archivos del proyecto que NO deben exponerse ────────────
+/database.sql
+LEEME-seguridad.md
+
+
+# ── SFTP / clientes de transferencia ────────────────────────
+# FileZilla
+.filezilla/
+*filezilla*.xml
+recentservers.xml
+sitemanager.xml
+
+# WinSCP
+*.ini
+WinSCP.ini
+
+# Cyberduck
+*.duck
+*.cyberduck
+Cyberduck Bookmarks/
+
+# Transmit (macOS)
+*.transmitsync
+*.transmit
+
+# VS Code — extensión SFTP (nageev/vscode-sftp)
+.vscode/sftp.json
+
+# PhpStorm / WebStorm — configuración de despliegue
+.idea/deployment.xml
+.idea/webServers.xml
+.idea/remote_mappings.xml
+
+# Claves SSH privadas (por si quedan en la raíz del proyecto)
+id_rsa
+id_ed25519
+id_ecdsa
+*.pem
+*.ppk
