@@ -1,0 +1,83 @@
+/* ============================================================
+   utilidades.css — Reset, base y clases de utilidad
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background:             var(--paper);
+  color:                  var(--ink);
+  font-family:            var(--font-sans);
+  font-size:              var(--fs-body);
+  line-height:            var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+img  { max-width: 100%; display: block; }
+a    { color: inherit; text-decoration: none; }
+h1, h2, h3, h4 {
+  font-family:   var(--font-serif);
+  font-weight:   500;
+  line-height:   var(--lh-heading);
+  letter-spacing: -.01em;
+}
+
+/* ── Contenedor global ──────────────────────────────────── */
+.wrap { width: var(--wrap); margin-inline: auto; }
+
+/* ── Eyebrow (categoría / etiqueta pequeña) ─────────────── */
+.eyebrow {
+  font-size:      var(--fs-label);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  font-weight:    600;
+  color:          var(--gold);
+  display:        flex;
+  align-items:    center;
+  gap:            .7rem;
+}
+.eyebrow::before {
+  content:    "";
+  width:      26px;
+  height:     1px;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+.eyebrow--light             { color: var(--gold-soft); }
+.eyebrow--light::before     { background: var(--gold-soft); }
+
+/* ── Sección estándar ───────────────────────────────────── */
+.blk           { padding: var(--sp-section) 0; }
+.blk--alt      { background: var(--paper-2); }
+.blk--dark     { background: var(--ink); color: var(--paper); }
+
+.sec-head      { margin-bottom: var(--sp-sm); }
+.sec-head h2   { font-size: var(--fs-h2); margin-top: 1rem; }
+
+/* ── Scroll reveal ──────────────────────────────────────── */
+.rv {
+  opacity:    0;
+  transform:  translateY(18px);
+  transition: opacity var(--tr-slow), transform var(--tr-slow);
+}
+.rv.in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rv              { opacity: 1; transform: none; transition: none; }
+  html             { scroll-behavior: auto; }
+}
+
+/* ── Alertas ────────────────────────────────────────────── */
+.alerta {
+  padding:       .7rem 1rem;
+  border-radius: var(--r-card);
+  font-size:     .85rem;
+  margin-bottom: .6rem;
+}
+.alerta--error   { background: #fbeae9; color: var(--error); }
+.alerta--exito   { background: var(--success-bg); color: var(--gold-soft);
+                   border: 1px solid var(--gold-soft); }
+
+/* ── Campo honeypot anti-spam ───────────────────────────── */
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }

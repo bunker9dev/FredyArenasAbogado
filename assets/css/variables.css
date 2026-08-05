@@ -1,0 +1,54 @@
+/* ============================================================
+   variables.css — Tokens de diseño
+   Única fuente de verdad. Todos los demás CSS los importan.
+   ============================================================ */
+
+:root {
+  /* ── Paleta ─────────────────────────────────────────────── */
+  --paper:        #f6f4ef;  /* fondo principal (papel cálido)  */
+  --paper-2:      #efece4;  /* superficie ligeramente más densa */
+  --ink:          #171a20;  /* texto / fondos oscuros           */
+  --ink-soft:     #4a4f59;  /* texto secundario                 */
+  --line:         #d8d3c7;  /* líneas hairline                  */
+  --gold:         #a8843e;  /* acento de marca                  */
+  --gold-soft:    #c4a768;  /* acento secundario (sobre oscuro) */
+  --error:        #b3261e;
+  --success-bg:   rgba(196,167,104,.16);
+
+  /* ── Tipografía ─────────────────────────────────────────── */
+  --font-serif:   'Fraunces', Georgia, serif;
+  --font-sans:    'Inter', system-ui, sans-serif;
+
+  --fs-body:      clamp(15px, 1.05vw, 17px);
+  --fs-sm:        .86rem;
+  --fs-xs:        .78rem;
+  --fs-label:     .72rem;
+
+  --fs-h1:        clamp(2.8rem, 6.5vw, 4.9rem);
+  --fs-h2:        clamp(2rem, 4vw, 3rem);
+  --fs-h3:        1.12rem;
+
+  --lh-body:      1.65;
+  --lh-heading:   1.05;
+  --lh-loose:     1.7;
+
+  /* ── Espaciado ──────────────────────────────────────────── */
+  --sp-section:   clamp(4rem, 8vw, 7rem);
+  --sp-sm:        clamp(2rem, 4vw, 3rem);
+  --sp-hero-v:    clamp(3.5rem, 7vw, 6rem);
+
+  /* ── Layout ─────────────────────────────────────────────── */
+  --wrap:         min(1180px, 90vw);
+  --r-card:       3px;
+  --r-btn:        2px;
+  --r-pill:       100px;
+
+  /* ── Sombras ─────────────────────────────────────────────── */
+  --shadow-card:  0 14px 32px rgba(23, 26, 32, .09);
+  --shadow-wa:    0 6px 24px rgba(0, 0, 0, .22);
+
+  /* ── Transiciones ────────────────────────────────────────── */
+  --tr-fast:      .18s ease;
+  --tr-base:      .22s ease;
+  --tr-slow:      .7s ease;
+}

@@ -1,0 +1,64 @@
+/* ============================================================
+   botones.css — Variantes de botones y CTAs
+   ============================================================ */
+
+.btn {
+  display:     inline-flex;
+  align-items: center;
+  gap:         .5rem;
+  padding:     .85rem 1.6rem;
+  border-radius: var(--r-btn);
+  font-family: var(--font-sans);
+  font-size:   .9rem;
+  font-weight: 600;
+  cursor:      pointer;
+  border:      0;
+  transition:  background var(--tr-base), transform var(--tr-base),
+               border-color var(--tr-base), gap var(--tr-base);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Primario — tinta */
+.btn--primary { background: var(--ink); color: var(--paper); }
+.btn--primary:hover { background: var(--gold); transform: translateY(-1px); }
+
+/* Fantasma — borde */
+.btn--ghost {
+  background:  transparent;
+  border:      1px solid var(--line);
+  color:       var(--ink);
+}
+.btn--ghost:hover { border-color: var(--ink); }
+
+/* Dorado — para secciones oscuras */
+.btn--gold { background: var(--gold); color: var(--ink); border: 0; }
+.btn--gold:hover { background: var(--gold-soft); }
+
+/* Nav CTA */
+.nav-cta {
+  border:        1px solid var(--ink);
+  padding:       .55rem 1.1rem;
+  border-radius: var(--r-btn);
+  font-size:     .82rem;
+  font-weight:   600;
+  transition:    background var(--tr-fast), color var(--tr-fast);
+}
+.nav-cta:hover { background: var(--ink); color: var(--paper); }
+
+/* Ver todos (texto + línea) */
+.see-all {
+  font-size:   .85rem;
+  font-weight: 600;
+  color:       var(--ink);
+  display:     inline-flex;
+  align-items: center;
+  gap:         .45rem;
+  border-bottom: 1px solid var(--gold);
+  padding-bottom: .15rem;
+  transition:  gap var(--tr-base), color var(--tr-base);
+}
+.see-all:hover { gap: .75rem; color: var(--gold); }
+
+/* Grupo de botones */
+.btns { display: flex; gap: 1rem; flex-wrap: wrap; }

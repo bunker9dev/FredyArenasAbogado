@@ -1,0 +1,68 @@
+/* ============================================================
+   footer.css — Pie de página y botón flotante de WhatsApp
+   ============================================================ */
+
+.site-footer {
+  background:   var(--ink);
+  color:        #b9bcc4;
+  padding:      clamp(2.5rem, 5vw, 3.5rem) 0 2rem;
+  border-top:   1px solid #2a2f38;
+}
+
+.footer__grid {
+  display:         flex;
+  flex-wrap:       wrap;
+  justify-content: space-between;
+  gap:             2rem;
+  align-items:     flex-start;
+}
+
+.footer__info p { margin-bottom: .5rem; font-size: .9rem; }
+.footer__info .name {
+  color:       var(--paper);
+  font-family: var(--font-serif);
+  font-size:   1.1rem;
+}
+
+/* Redes sociales */
+.footer__social { display: flex; gap: 1rem; }
+.footer__social a {
+  color:      #b9bcc4;
+  transition: color var(--tr-fast);
+}
+.footer__social a:hover { color: var(--gold-soft); }
+
+/* Línea inferior */
+.footer__bottom {
+  border-top:      1px solid #2a2f38;
+  margin-top:      2rem;
+  padding-top:     1.4rem;
+  display:         flex;
+  justify-content: space-between;
+  flex-wrap:       wrap;
+  gap:             .6rem;
+  font-size:       var(--fs-xs);
+  color:           #8b8f98;
+}
+.footer__bottom a { color: var(--gold-soft); }
+.footer__bottom a:hover { text-decoration: underline; }
+
+/* ── WhatsApp flotante ───────────────────────────────────── */
+.wa-float {
+  position:      fixed;
+  right:         22px;
+  bottom:        22px;
+  width:         52px;
+  height:        52px;
+  border-radius: 50%;
+  background:    var(--ink);
+  color:         var(--paper);
+  display:       flex;
+  align-items:   center;
+  justify-content: center;
+  z-index:       60;
+  box-shadow:    var(--shadow-wa);
+  transition:    background var(--tr-base), transform var(--tr-base);
+}
+.wa-float:hover { background: var(--gold); transform: scale(1.06); }
+.wa-float svg   { width: 24px; height: 24px; }

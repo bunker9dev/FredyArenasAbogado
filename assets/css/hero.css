@@ -1,0 +1,76 @@
+/* ============================================================
+   hero.css — Sección hero y franja de credenciales
+   ============================================================ */
+
+.hero {
+  padding: var(--sp-hero-v) 0 clamp(3rem, 5vw, 4.5rem);
+}
+
+.hero__grid {
+  display:     grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap:         clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+}
+
+.hero__text h1 {
+  font-size:   var(--fs-h1);
+  margin:      1.4rem 0 1.5rem;
+}
+.hero__text h1 em {
+  font-style: italic;
+  color:      var(--gold);
+}
+
+.hero__sub {
+  font-size:   1.02rem;
+  color:       var(--ink-soft);
+  max-width:   44ch;
+  margin-bottom: 2rem;
+}
+.hero__sub strong { color: var(--ink); font-weight: 600; }
+
+/* Retrato con marco dorado */
+.hero__portrait { position: relative; }
+.hero__portrait img {
+  width:         100%;
+  border-radius: var(--r-card);
+  filter:        grayscale(.12) contrast(1.02);
+}
+.hero__portrait::after {
+  content:       "";
+  position:      absolute;
+  inset:         14px -14px -14px 14px;
+  border:        1px solid var(--gold);
+  border-radius: var(--r-card);
+  z-index:       -1;
+}
+
+/* Franja de credenciales */
+.creds {
+  border-top:    1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-top:    clamp(2.5rem, 5vw, 4rem);
+}
+.creds__inner {
+  display:     flex;
+  flex-wrap:   wrap;
+  gap:         .4rem 2.4rem;
+  padding:     1.15rem 0;
+  font-size:   .8rem;
+  letter-spacing: .03em;
+  color:       var(--ink-soft);
+}
+.creds__inner span {
+  display:     flex;
+  align-items: center;
+  gap:         .7rem;
+}
+.creds__inner span::before {
+  content:       "";
+  width:         5px;
+  height:        5px;
+  background:    var(--gold);
+  border-radius: 50%;
+  flex-shrink:   0;
+}

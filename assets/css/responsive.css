@@ -1,0 +1,52 @@
+/* ============================================================
+   responsive.css — Breakpoints
+   Se aplica DESPUÉS de todos los demás CSS.
+   ============================================================ */
+
+/* ── Tablet / Landscape ──────────────────────────────────── */
+@media (max-width: 1024px) {
+  .cards { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Tablet / Portrait ───────────────────────────────────── */
+@media (max-width: 860px) {
+
+  /* Hero */
+  .hero__grid { grid-template-columns: 1fr; }
+  .hero__portrait { max-width: 360px; margin-inline: auto; order: -1; }
+
+  /* Perfil */
+  .perfil__grid { grid-template-columns: 1fr; }
+
+  /* Servicios */
+  .serv-grid                  { grid-template-columns: 1fr; }
+  .serv:nth-child(odd)        { padding-right: 0; border-right: 0; }
+  .serv:nth-child(even)       { padding-left: 0; }
+
+  /* Contacto */
+  .contacto-grid { grid-template-columns: 1fr; }
+
+  /* Nav */
+  .nav__menu  { display: none; }
+  .nav-cta    { display: none; }
+  .nav__burger { display: block; }
+
+  /* Blog */
+  .cards { grid-template-columns: repeat(2, 1fr); }
+
+  /* Footer */
+  .footer__grid { flex-direction: column; }
+}
+
+/* ── Móvil ───────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  .cards { grid-template-columns: 1fr; }
+
+  .toolbar {
+    flex-direction: column;
+    align-items:    stretch;
+  }
+  .search { max-width: 100%; }
+
+  .hero__text h1 { font-size: clamp(2.2rem, 9vw, 3rem); }
+}
