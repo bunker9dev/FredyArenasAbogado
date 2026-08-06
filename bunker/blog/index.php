@@ -111,7 +111,7 @@ require __DIR__ . '/../../bunker/includes/admin-layout.php';
       <td>
         <?php if (!empty($a['imagen'])): ?>
         <img class="adm-table__img"
-             src="/imagenes/<?php echo rawurlencode($a['imagen']); ?>" alt="">
+             src="<?php echo h(imagen_blog_url($a['imagen'])); ?>" alt="">
         <?php else: ?>
         <div class="adm-table__img" style="background:var(--paper-2);border-radius:2px"></div>
         <?php endif; ?>

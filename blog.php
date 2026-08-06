@@ -135,11 +135,10 @@ require __DIR__ . '/includes/templates/header.php';
         <?php foreach ($articulos as $a):
           $autor = trim(h($a['autor_nombre']) . ' ' . h($a['autor_apellido']));
           $url   = '/blog/' . h($a['slug']);
-          $img   = imagen_blog($a['imagen'] ?? '');
         ?>
         <article class="card">
           <a href="<?php echo $url; ?>" class="card__img">
-            <img loading="lazy" src="<?php echo $img; ?>" alt="<?php echo h($a['titulo']); ?>">
+            <?php echo imagen_blog($a['imagen'] ?? '', $a['titulo']); ?>
           </a>
           <div class="card__body">
             <span class="card__cat"><?php echo h($a['area']); ?></span>

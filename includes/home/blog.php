@@ -58,11 +58,10 @@ if ($db_home) {
         $slug_art = !empty($a['slug']) ? $a['slug'] : slugify($a['titulo']);
         $area_art = !empty($a['area']) ? $a['area'] : 'Artículo';
         $url      = '/blog/' . h($slug_art);
-        $img      = imagen_blog($a['imagen'] ?? '');
       ?>
       <article class="card">
         <a href="<?php echo $url; ?>" class="card__img">
-          <img loading="lazy" src="<?php echo $img; ?>" alt="<?php echo h($a['titulo']); ?>">
+          <?php echo imagen_blog($a['imagen'] ?? '', $a['titulo']); ?>
         </a>
         <div class="card__body">
           <span class="card__cat"><?php echo h($area_art); ?></span>

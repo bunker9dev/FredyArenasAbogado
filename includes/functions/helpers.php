@@ -52,12 +52,107 @@ function slugify(string $texto): string
 
 /* ── Imágenes ───────────────────────────────────────────── */
 
-/** Devuelve la ruta a la imagen de un artículo (o la imagen por defecto). */
-function imagen_blog(string $nombre = '', string $default = '/assets/img/og-default.webp'): string
+/**
+ * Procesa UNA imagen subida y genera automáticamente dos versiones WebP:
+ *   {base}-1200.webp  (escritorio, 1200×800, recorte 3:2)
+ *   {base}-700.webp   (móvil,      700×467,  recorte 3:2)
+ *
+ * El editor solo sube un archivo; esta función crea las dos versiones
+ * en el servidor y devuelve el nombre "base" (sin sufijo ni extensión)
+ * que se guarda en la columna `imagen` de la BD.
+ *
+ * Devuelve '' si algo falla (el llamador debe seguir usando la imagen
+ * anterior o el placeholder por defecto).
+ */
+function procesar_imagen_blog(string $tmp_path, string $mime_type, string $dir_destino): string
 {
-    if ($nombre === '') return $default;
-    $ruta = '/imagenes/' . rawurlencode($nombre);
-    return $ruta;
+    if (!function_exists('imagecreatetruecolor')) return '';
+
+    switch ($mime_type) {
+        case 'image/jpeg': $origen = @imagecreatefromjpeg($tmp_path); break;
+        case 'image/png':  $origen = @imagecreatefrompng($tmp_path);  break;
+        case 'image/webp': $origen = @imagecreatefromwebp($tmp_path); break;
+        default: return '';
+    }
+    if (!$origen) return '';
+
+    $ancho_orig = imagesx($origen);
+    $alto_orig  = imagesy($origen);
+
+    /* Recorte centrado a proporción 3:2 (la que usa .card__img en blog.css) */
+    $ratio_obj = 3 / 2;
+    $ratio_act = $ancho_orig / $alto_orig;
+
+    if ($ratio_act > $ratio_obj) {
+        $alto_recorte  = $alto_orig;
+        $ancho_recorte = (int) round($alto_orig * $ratio_obj);
+        $x_origen      = (int) round(($ancho_orig - $ancho_recorte) / 2);
+        $y_origen      = 0;
+    } else {
+        $ancho_recorte = $ancho_orig;
+        $alto_recorte  = (int) round($ancho_orig / $ratio_obj);
+        $x_origen      = 0;
+        $y_origen      = (int) round(($alto_orig - $alto_recorte) / 2);
+    }
+
+    if (!is_dir($dir_destino)) mkdir($dir_destino, 0755, true);
+    $base = bin2hex(random_bytes(12));
+
+    $tamanos = ['1200' => 1200, '700' => 700];
+    foreach ($tamanos as $sufijo => $ancho_final) {
+        $alto_final = (int) round($ancho_final / $ratio_obj);
+        $lienzo = imagecreatetruecolor($ancho_final, $alto_final);
+        imagecopyresampled(
+            $lienzo, $origen,
+            0, 0, $x_origen, $y_origen,
+            $ancho_final, $alto_final,
+            $ancho_recorte, $alto_recorte
+        );
+        imagewebp($lienzo, "$dir_destino/{$base}-{$sufijo}.webp", 82);
+        imagedestroy($lienzo);
+    }
+
+    imagedestroy($origen);
+    return $base;
+}
+
+/** Borra ambos tamaños (1200/700) de una imagen de artículo. */
+function borrar_imagen_blog(string $base, string $dir): void
+{
+    if ($base === '') return;
+    foreach (['1200', '700'] as $sufijo) {
+        $ruta = "$dir/{$base}-{$sufijo}.webp";
+        if (is_file($ruta)) @unlink($ruta);
+    }
+}
+
+/**
+ * Devuelve el HTML <img> con srcset para servir la versión correcta
+ * (700px en móvil, 1200px en escritorio) desde un solo nombre base.
+ */
+function imagen_blog(string $base = '', string $alt = '', string $clase = '', bool $lazy = true): string
+{
+    if ($base === '') {
+        return '<img src="/assets/img/og-default.webp" alt="' . h($alt) . '"'
+             . ($clase ? ' class="' . h($clase) . '"' : '')
+             . ($lazy ? ' loading="lazy"' : '') . '>';
+    }
+    $src700  = '/imagenes/' . rawurlencode($base) . '-700.webp';
+    $src1200 = '/imagenes/' . rawurlencode($base) . '-1200.webp';
+
+    return '<img src="' . h($src1200) . '"'
+         . ' srcset="' . h($src700) . ' 700w, ' . h($src1200) . ' 1200w"'
+         . ' sizes="(max-width: 640px) 100vw, 33vw"'
+         . ' alt="' . h($alt) . '"'
+         . ($clase ? ' class="' . h($clase) . '"' : '')
+         . ($lazy ? ' loading="lazy"' : '') . '>';
+}
+
+/** Devuelve solo la URL de la versión grande (1200px) — para og:image, etc. */
+function imagen_blog_url(string $base = '', string $default = '/assets/img/og-default.webp'): string
+{
+    if ($base === '') return $default;
+    return '/imagenes/' . rawurlencode($base) . '-1200.webp';
 }
 
 

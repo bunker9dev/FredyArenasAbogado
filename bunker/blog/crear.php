@@ -31,18 +31,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$d['texto_completo']) $errores[] = 'El contenido es obligatorio.';
         if (!in_array($d['area'], $areas, true)) $errores[] = 'Selecciona un área válida.';
 
-        /* ── Imagen ────────────────────────────────────────── */
+        /* ── Imagen ────────────────────────────────────────────
+         * Se sube UN solo archivo; procesar_imagen_blog() genera
+         * automáticamente las versiones -1200.webp y -700.webp.
+         * ──────────────────────────────────────────────────── */
         $imagen = $_FILES['imagen'] ?? null;
         $nombre_img = '';
+        $imagen_pendiente = false;
         if (!empty($imagen['name'])) {
             $max = 5 * 1024 * 1024;
             if ($imagen['size'] > $max) { $errores[] = 'La imagen supera los 5 MB.'; }
             $finfo = new finfo(FILEINFO_MIME_TYPE);
             $tipo  = $finfo->file($imagen['tmp_name']);
-            $exts  = ['image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp'];
-            if (!isset($exts[$tipo])) { $errores[] = 'Formato no permitido (JPG, PNG o WebP).'; }
-            else {
-                $nombre_img = bin2hex(random_bytes(12)) . '.' . $exts[$tipo];
+            if (!in_array($tipo, ['image/jpeg','image/png','image/webp'], true)) {
+                $errores[] = 'Formato no permitido (JPG, PNG o WebP).';
+            } else {
+                $imagen_pendiente = true; // se procesa más abajo, tras validar el resto
             }
         }
 
@@ -54,29 +58,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $chk->execute(); $chk->bind_result($existe); $chk->fetch(); $chk->close();
             if ($existe) { $d['slug'] .= '-' . date('ymd'); }
 
-            /* ── Guardar imagen ────────────────────────────── */
-            if ($nombre_img) {
-                $dir = __DIR__ . '/../../imagenes/';
-                if (!is_dir($dir)) mkdir($dir, 0755, true);
-                move_uploaded_file($imagen['tmp_name'], $dir . $nombre_img);
+            /* ── Procesar imagen (genera -1200.webp y -700.webp) ── */
+            if ($imagen_pendiente) {
+                $dir = __DIR__ . '/../../imagenes';
+                $nombre_img = procesar_imagen_blog($imagen['tmp_name'], $tipo, $dir);
+                if ($nombre_img === '') {
+                    $errores[] = 'No se pudo procesar la imagen. Intenta con otro archivo.';
+                }
             }
 
             /* ── INSERT ────────────────────────────────────── */
-            $st = $db->prepare(
-                "INSERT INTO blog (titulo,slug,area,fecha,autor_nombre,autor_apellido,
-                                   texto_inicio,texto_completo,imagen,imagen_autor,estado)
-                 VALUES (?,?,?,?,?,?,?,?,?,?,?)");
-            $st->bind_param('sssssssssss',
-                $d['titulo'],$d['slug'],$d['area'],$d['fecha'],
-                $d['autor_nombre'],$d['autor_apellido'],
-                $d['texto_inicio'],$d['texto_completo'],
-                $nombre_img,$d['imagen_autor'],$d['estado']);
+            if (empty($errores)) {
+                $st = $db->prepare(
+                    "INSERT INTO blog (titulo,slug,area,fecha,autor_nombre,autor_apellido,
+                                       texto_inicio,texto_completo,imagen,imagen_autor,estado)
+                     VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+                $st->bind_param('sssssssssss',
+                    $d['titulo'],$d['slug'],$d['area'],$d['fecha'],
+                    $d['autor_nombre'],$d['autor_apellido'],
+                    $d['texto_inicio'],$d['texto_completo'],
+                    $nombre_img,$d['imagen_autor'],$d['estado']);
 
-            if ($st->execute()) {
-                header('Location: /bunker/blog/?ok=creado');
-                exit;
+                if ($st->execute()) {
+                    header('Location: /bunker/blog/?ok=creado');
+                    exit;
+                }
+                $errores[] = 'Error al guardar en la base de datos.';
             }
-            $errores[] = 'Error al guardar en la base de datos.';
         }
     }
 }
@@ -167,7 +175,7 @@ require __DIR__ . '/../../bunker/includes/admin-layout.php';
 
       <!-- Contenido -->
       <div class="adm-field span2">
-        <label for="texto_completo">Contenido completo * <span style="font-weight:400;font-size:.72rem">(HTML básico permitido: &lt;p&gt; &lt;h2&gt; &lt;ul&gt; &lt;strong&gt; &lt;em&gt;)</span></label>
+        <label for="texto_completo">Contenido completo * <span style="font-weight:400;font-size:.72rem">(usa los botones de arriba para dar formato)</span></label>
         <textarea id="texto_completo" name="texto_completo"
                   class="adm-editor"
                   placeholder="<p>Escribe el artículo aquí…</p>"

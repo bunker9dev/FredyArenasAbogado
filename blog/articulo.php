@@ -71,7 +71,7 @@ $page_title     = h($articulo['titulo']) . ' · Fredy Arenas Abogado';
 $page_desc      = h(mb_strimwidth(strip_tags($articulo['texto_inicio']), 0, 155, '…'));
 $page_canonical = 'https://fredyarenasabogado.com/blog/' . h($articulo['slug']);
 $page_og_image  = !empty($articulo['imagen'])
-    ? 'https://fredyarenasabogado.com/imagenes/' . rawurlencode($articulo['imagen'])
+    ? 'https://fredyarenasabogado.com' . imagen_blog_url($articulo['imagen'])
     : 'https://fredyarenasabogado.com/assets/img/perfil-fredyarenas5.webp';
 $current_page   = 'blog';
 $cargar_articulo_js = true;
@@ -125,8 +125,7 @@ require __DIR__ . '/../includes/templates/header.php';
   <!-- Imagen hero -->
   <?php if (!empty($articulo['imagen'])): ?>
   <div class="art-hero">
-    <img src="/imagenes/<?php echo rawurlencode($articulo['imagen']); ?>"
-         alt="<?php echo h($articulo['titulo']); ?>">
+    <?php echo imagen_blog($articulo['imagen'], $articulo['titulo'], '', false); ?>
   </div>
   <?php endif; ?>
 
@@ -203,12 +202,10 @@ require __DIR__ . '/../includes/templates/header.php';
       <?php foreach ($relacionados as $r):
         $r_autor = trim(h($r['autor_nombre']) . ' ' . h($r['autor_apellido']));
         $r_url   = '/blog/' . h($r['slug']);
-        $r_img   = imagen_blog($r['imagen'] ?? '');
       ?>
       <article class="card">
         <a href="<?php echo $r_url; ?>" class="card__img">
-          <img loading="lazy" src="<?php echo $r_img; ?>"
-               alt="<?php echo h($r['titulo']); ?>">
+          <?php echo imagen_blog($r['imagen'] ?? '', $r['titulo']); ?>
         </a>
         <div class="card__body">
           <span class="card__cat"><?php echo h($r['area']); ?></span>

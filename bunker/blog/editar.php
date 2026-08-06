@@ -48,24 +48,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$d['texto_inicio'])   $errores[] = 'El resumen es obligatorio.';
         if (!$d['texto_completo']) $errores[] = 'El contenido es obligatorio.';
 
-        /* ── Nueva imagen (opcional) ───────────────────────── */
+        /* ── Nueva imagen (opcional) ─────────────────────────
+         * Se sube UN solo archivo; procesar_imagen_blog() genera
+         * -1200.webp y -700.webp automáticamente.
+         * ──────────────────────────────────────────────────── */
         $imagen = $_FILES['imagen'] ?? null;
         $nombre_img = $art['imagen']; // conservar la existente por defecto
 
         if (!empty($imagen['name'])) {
             $finfo = new finfo(FILEINFO_MIME_TYPE);
             $tipo  = $finfo->file($imagen['tmp_name']);
-            $exts  = ['image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp'];
-            if ($imagen['size'] > 5*1024*1024) $errores[] = 'La imagen supera los 5 MB.';
-            elseif (!isset($exts[$tipo]))       $errores[] = 'Formato no permitido.';
-            else {
-                $dir = __DIR__ . '/../../imagenes/';
-                if (!is_dir($dir)) mkdir($dir, 0755, true);
-                $nombre_img = bin2hex(random_bytes(12)) . '.' . $exts[$tipo];
-                move_uploaded_file($imagen['tmp_name'], $dir . $nombre_img);
-                // Borrar imagen anterior
-                if ($art['imagen'] && is_file($dir . $art['imagen'])) {
-                    @unlink($dir . $art['imagen']);
+            if ($imagen['size'] > 5*1024*1024) {
+                $errores[] = 'La imagen supera los 5 MB.';
+            } elseif (!in_array($tipo, ['image/jpeg','image/png','image/webp'], true)) {
+                $errores[] = 'Formato no permitido.';
+            } else {
+                $dir = __DIR__ . '/../../imagenes';
+                $nuevo_base = procesar_imagen_blog($imagen['tmp_name'], $tipo, $dir);
+                if ($nuevo_base === '') {
+                    $errores[] = 'No se pudo procesar la imagen. Intenta con otro archivo.';
+                } else {
+                    borrar_imagen_blog($art['imagen'], $dir); // borra las 2 versiones anteriores
+                    $nombre_img = $nuevo_base;
                 }
             }
         }
@@ -161,14 +165,14 @@ require __DIR__ . '/../../bunker/includes/admin-layout.php';
                   style="min-height:70px" required><?php echo h($d['texto_inicio']); ?></textarea>
       </div>
       <div class="adm-field span2">
-        <label for="texto_completo">Contenido * <span style="font-weight:400;font-size:.72rem">(HTML básico permitido)</span></label>
+        <label for="texto_completo">Contenido * <span style="font-weight:400;font-size:.72rem">(usa los botones de arriba para dar formato)</span></label>
         <textarea id="texto_completo" name="texto_completo"
                   class="adm-editor" required><?php echo h($d['texto_completo']); ?></textarea>
       </div>
       <div class="adm-field">
         <label>Imagen actual</label>
         <?php if (!empty($d['imagen'])): ?>
-          <img src="/imagenes/<?php echo rawurlencode($d['imagen']); ?>"
+          <img src="<?php echo h(imagen_blog_url($d['imagen'])); ?>"
                style="max-height:120px;border-radius:4px;border:1px solid var(--line)" alt="">
         <?php else: ?>
           <span style="font-size:.82rem;color:var(--ink-soft)">Sin imagen</span>
