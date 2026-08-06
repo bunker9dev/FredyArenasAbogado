@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../admin/includes/auth.php';
+require_once __DIR__ . '/../../bunker/includes/auth.php';
 requiere_auth();
 require_once __DIR__ . '/../../includes/config/database.php';
 require_once __DIR__ . '/../../includes/functions/helpers.php';
@@ -47,8 +47,8 @@ $flash = $_GET['ok'] ?? '';
 
 $adm_title      = 'Artículos';
 $adm_nav_active = 'articulos';
-require __DIR__ . '/../../admin/includes/admin-head.php';
-require __DIR__ . '/../../admin/includes/admin-layout.php';
+require __DIR__ . '/../../bunker/includes/admin-head.php';
+require __DIR__ . '/../../bunker/includes/admin-layout.php';
 ?>
 
 <?php if ($flash === 'creado'): ?>
@@ -64,7 +64,7 @@ require __DIR__ . '/../../admin/includes/admin-layout.php';
     <h1>Artículos</h1>
     <p><?php echo $total; ?> artículo<?php echo $total!==1?'s':''; ?> en total</p>
   </div>
-  <a class="adm-btn adm-btn--primary" href="/admin/blog/crear.php">
+  <a class="adm-btn adm-btn--primary" href="/bunker/blog/crear.php">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
     Nuevo artículo
   </a>
@@ -73,7 +73,7 @@ require __DIR__ . '/../../admin/includes/admin-layout.php';
 <div class="adm-table-wrap">
   <!-- Búsqueda y filtros -->
   <div class="adm-table-top">
-    <form method="GET" action="/admin/blog/" style="display:flex;gap:.8rem;flex-wrap:wrap;align-items:center">
+    <form method="GET" action="/bunker/blog/" style="display:flex;gap:.8rem;flex-wrap:wrap;align-items:center">
       <div class="adm-search">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2">
           <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/>
@@ -88,7 +88,7 @@ require __DIR__ . '/../../admin/includes/admin-layout.php';
         <option value="borrador"  <?php echo $estado==='borrador' ?'selected':''; ?>>Borradores</option>
       </select>
       <?php if ($q||$estado): ?>
-        <a class="adm-btn adm-btn--ghost adm-btn--sm" href="/admin/blog/">Limpiar</a>
+        <a class="adm-btn adm-btn--ghost adm-btn--sm" href="/bunker/blog/">Limpiar</a>
       <?php endif; ?>
     </form>
   </div>
@@ -128,11 +128,11 @@ require __DIR__ . '/../../admin/includes/admin-layout.php';
       <td>
         <div class="adm-table__actions">
           <a class="adm-btn adm-btn--ghost adm-btn--sm"
-             href="/admin/blog/editar.php?slug=<?php echo urlencode($a['slug']); ?>">Editar</a>
+             href="/bunker/blog/editar.php?slug=<?php echo urlencode($a['slug']); ?>">Editar</a>
           <a class="adm-btn adm-btn--ghost adm-btn--sm"
              href="/blog/<?php echo h($a['slug']); ?>" target="_blank">Ver</a>
           <button class="adm-btn adm-btn--danger adm-btn--sm" type="button"
-                  onclick="confirmarBorrar('/admin/blog/borrar.php?id=<?php echo (int)$a['id']; ?>')">
+                  onclick="confirmarBorrar('/bunker/blog/borrar.php?id=<?php echo (int)$a['id']; ?>')">
             Borrar
           </button>
         </div>
@@ -160,9 +160,9 @@ require __DIR__ . '/../../admin/includes/admin-layout.php';
   <?php else: ?>
   <div class="adm-empty">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
-    <p><?php echo $q||$estado ? 'Sin resultados para tu búsqueda.' : 'Aún no hay artículos. <a href="/admin/blog/crear.php" style="color:var(--gold)">Crea el primero.</a>'; ?></p>
+    <p><?php echo $q||$estado ? 'Sin resultados para tu búsqueda.' : 'Aún no hay artículos. <a href="/bunker/blog/crear.php" style="color:var(--gold)">Crea el primero.</a>'; ?></p>
   </div>
   <?php endif; ?>
 </div>
 
-<?php require __DIR__ . '/../../admin/includes/admin-footer.php'; ?>
+<?php require __DIR__ . '/../../bunker/includes/admin-footer.php'; ?>

@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../admin/includes/auth.php';
+require_once __DIR__ . '/../../bunker/includes/auth.php';
 requiere_auth();
 require_once __DIR__ . '/../../includes/config/database.php';
 require_once __DIR__ . '/../../includes/functions/helpers.php';
@@ -34,20 +34,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $st->bind_param('sssssss',
                 $d['titulo'],$d['plataforma'],$d['video_id'],
                 $d['url_original'],$d['descripcion'],$d['area'],$d['estado']);
-            if ($st->execute()) { header('Location: /admin/videos/?ok=creado'); exit; }
+            if ($st->execute()) { header('Location: /bunker/videos/?ok=creado'); exit; }
             $errores[] = 'Error al guardar en la base de datos.';
         }
     }
 }
 
 $adm_title = 'Nuevo video'; $adm_nav_active = 'vid-crear';
-require __DIR__ . '/../../admin/includes/admin-head.php';
-require __DIR__ . '/../../admin/includes/admin-layout.php';
+require __DIR__ . '/../../bunker/includes/admin-head.php';
+require __DIR__ . '/../../bunker/includes/admin-layout.php';
 ?>
 
 <div class="adm-page-head">
   <div><h1>Nuevo video</h1><p>Pega el enlace de YouTube o TikTok.</p></div>
-  <a class="adm-btn adm-btn--ghost" href="/admin/videos/">← Volver</a>
+  <a class="adm-btn adm-btn--ghost" href="/bunker/videos/">← Volver</a>
 </div>
 
 <?php foreach ($errores as $e): ?>
@@ -59,7 +59,7 @@ require __DIR__ . '/../../admin/includes/admin-layout.php';
 </div>
 
 <div class="adm-form-wrap">
-  <form method="POST" action="/admin/videos/crear.php" autocomplete="off">
+  <form method="POST" action="/bunker/videos/crear.php" autocomplete="off">
     <?php echo csrf_campo(); ?>
     <div class="adm-form-grid">
 
@@ -119,9 +119,9 @@ require __DIR__ . '/../../admin/includes/admin-layout.php';
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
         Guardar video
       </button>
-      <a class="adm-btn adm-btn--ghost" href="/admin/videos/">Cancelar</a>
+      <a class="adm-btn adm-btn--ghost" href="/bunker/videos/">Cancelar</a>
     </div>
   </form>
 </div>
 
-<?php require __DIR__ . '/../../admin/includes/admin-footer.php'; ?>
+<?php require __DIR__ . '/../../bunker/includes/admin-footer.php'; ?>

@@ -6,7 +6,7 @@
  * Incluir SIEMPRE al inicio de cualquier archivo bajo /admin, ANTES de imprimir
  * nada al navegador:
  *
- *     require_once __DIR__ . '/../includes/auth.php';   // desde /admin
+ *     require_once __DIR__ . '/../includes/auth.php';   // desde /bunker
  *     requiere_auth();                                   // protege la página
  *
  * Usa __DIR__ para que las rutas funcionen sin importar desde qué carpeta se llame.
@@ -32,7 +32,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$CONFIG_ADMIN = require __DIR__ . '/config/admin.php';
+$CONFIG_ADMIN = require __DIR__ . '/../../includes/config/admin.php';
 
 
 // ─────────────────────────────────────────────────────────────
@@ -55,8 +55,8 @@ function requiere_auth(): void
 {
     if (!esta_autenticado()) {
         // Recuerda a dónde quería ir para volver tras el login
-        $_SESSION['destino'] = $_SERVER['REQUEST_URI'] ?? '/admin/';
-        header('Location: /admin/login.php');
+        $_SESSION['destino'] = $_SERVER['REQUEST_URI'] ?? '/bunker/';
+        header('Location: /bunker/login.php');
         exit;
     }
 
@@ -64,7 +64,7 @@ function requiere_auth(): void
     $limite = 2 * 60 * 60;
     if (isset($_SESSION['ultimo_acceso']) && (time() - $_SESSION['ultimo_acceso']) > $limite) {
         cerrar_sesion();
-        header('Location: /admin/login.php?expirado=1');
+        header('Location: /bunker/login.php?expirado=1');
         exit;
     }
     $_SESSION['ultimo_acceso'] = time();

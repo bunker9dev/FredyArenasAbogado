@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 
-if (esta_autenticado()) { header('Location: /admin/'); exit; }
+if (esta_autenticado()) { header('Location: /bunker/'); exit; }
 
 $CONFIG_ADMIN = require __DIR__ . '/../includes/config/admin.php';
 $error = ''; $bloqueo = segundos_bloqueo();
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (hash_equals($CONFIG_ADMIN['usuario'], $usuario) && password_verify($clave, $CONFIG_ADMIN['hash'])) {
             limpiar_fallos();
             iniciar_sesion($CONFIG_ADMIN['usuario']);
-            $destino = $_SESSION['destino'] ?? '/admin/';
+            $destino = $_SESSION['destino'] ?? '/bunker/';
             unset($_SESSION['destino']);
             header('Location: ' . $destino); exit;
         }
@@ -52,7 +52,7 @@ $expirado = isset($_GET['expirado']);
 </style>
 </head>
 <body>
-<form class="login-card" method="POST" action="/admin/login.php" autocomplete="off">
+<form class="login-card" method="POST" action="/bunker/login.php" autocomplete="off">
   <div class="login-brand">
     <img src="/assets/img/logo_fredyarenasabogado_412x366.webp" onerror="this.style.display='none'" alt="">
     Fredy Arenas

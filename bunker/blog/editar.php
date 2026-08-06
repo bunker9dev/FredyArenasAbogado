@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../admin/includes/auth.php';
+require_once __DIR__ . '/../../bunker/includes/auth.php';
 requiere_auth();
 require_once __DIR__ . '/../../includes/config/database.php';
 require_once __DIR__ . '/../../includes/functions/helpers.php';
@@ -23,7 +23,7 @@ if ($db && $slug_param) {
 }
 
 if (!$art) {
-    header('Location: /admin/blog/?ok=noexiste');
+    header('Location: /bunker/blog/?ok=noexiste');
     exit;
 }
 $d = $art;
@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $art['id']);
 
             if ($st2->execute()) {
-                header('Location: /admin/blog/?ok=editado');
+                header('Location: /bunker/blog/?ok=editado');
                 exit;
             }
             $errores[] = 'Error al guardar los cambios.';
@@ -94,8 +94,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $adm_title      = 'Editar artículo';
 $adm_nav_active = 'articulos';
-require __DIR__ . '/../../admin/includes/admin-head.php';
-require __DIR__ . '/../../admin/includes/admin-layout.php';
+require __DIR__ . '/../../bunker/includes/admin-head.php';
+require __DIR__ . '/../../bunker/includes/admin-layout.php';
 ?>
 
 <div class="adm-page-head">
@@ -105,7 +105,7 @@ require __DIR__ . '/../../admin/includes/admin-layout.php';
   </div>
   <div style="display:flex;gap:.7rem">
     <a class="adm-btn adm-btn--ghost" href="/blog/<?php echo h($art['slug']); ?>" target="_blank">Ver en sitio</a>
-    <a class="adm-btn adm-btn--ghost" href="/admin/blog/">← Volver</a>
+    <a class="adm-btn adm-btn--ghost" href="/bunker/blog/">← Volver</a>
   </div>
 </div>
 
@@ -115,7 +115,7 @@ require __DIR__ . '/../../admin/includes/admin-layout.php';
 
 <div class="adm-form-wrap">
   <form method="POST"
-        action="/admin/blog/editar.php?slug=<?php echo urlencode($slug_param); ?>"
+        action="/bunker/blog/editar.php?slug=<?php echo urlencode($slug_param); ?>"
         enctype="multipart/form-data" autocomplete="off">
     <?php echo csrf_campo(); ?>
 
@@ -197,11 +197,11 @@ require __DIR__ . '/../../admin/includes/admin-layout.php';
         Guardar cambios
       </button>
       <button class="adm-btn adm-btn--danger" type="button"
-              onclick="confirmarBorrar('/admin/blog/borrar.php?id=<?php echo (int)$art['id']; ?>')">
+              onclick="confirmarBorrar('/bunker/blog/borrar.php?id=<?php echo (int)$art['id']; ?>')">
         Eliminar artículo
       </button>
     </div>
   </form>
 </div>
 
-<?php require __DIR__ . '/../../admin/includes/admin-footer.php'; ?>
+<?php require __DIR__ . '/../../bunker/includes/admin-footer.php'; ?>

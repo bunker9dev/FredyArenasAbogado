@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../admin/includes/auth.php';
+require_once __DIR__ . '/../../bunker/includes/auth.php';
 requiere_auth();
 require_once __DIR__ . '/../../includes/config/database.php';
 require_once __DIR__ . '/../../includes/functions/helpers.php';
@@ -17,7 +17,7 @@ if ($db && $id) {
     $st->execute();
     $v = $st->get_result()->fetch_assoc();
 }
-if (!$v) { header('Location: /admin/videos/'); exit; }
+if (!$v) { header('Location: /bunker/videos/'); exit; }
 $d = $v;
 
 $errores = [];
@@ -41,15 +41,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $st2->bind_param('sssssssi',
                 $d['titulo'],$d['plataforma'],$d['video_id'],
                 $d['url_original'],$d['descripcion'],$d['area'],$d['estado'],$id);
-            if ($st2->execute()) { header('Location: /admin/videos/?ok=editado'); exit; }
+            if ($st2->execute()) { header('Location: /bunker/videos/?ok=editado'); exit; }
             $errores[] = 'Error al guardar.';
         }
     }
 }
 
 $adm_title = 'Editar video'; $adm_nav_active = 'videos';
-require __DIR__ . '/../../admin/includes/admin-head.php';
-require __DIR__ . '/../../admin/includes/admin-layout.php';
+require __DIR__ . '/../../bunker/includes/admin-head.php';
+require __DIR__ . '/../../bunker/includes/admin-layout.php';
 
 // Generar URL de embed actual
 $isYT    = $d['plataforma'] === 'youtube';
@@ -60,7 +60,7 @@ $embedUrl = $isYT
 
 <div class="adm-page-head">
   <div><h1>Editar video</h1><p><?php echo h($v['titulo']); ?></p></div>
-  <a class="adm-btn adm-btn--ghost" href="/admin/videos/">← Volver</a>
+  <a class="adm-btn adm-btn--ghost" href="/bunker/videos/">← Volver</a>
 </div>
 
 <?php foreach ($errores as $e): ?>
@@ -68,7 +68,7 @@ $embedUrl = $isYT
 <?php endforeach; ?>
 
 <div class="adm-form-wrap">
-  <form method="POST" action="/admin/videos/editar.php?id=<?php echo $id; ?>" autocomplete="off">
+  <form method="POST" action="/bunker/videos/editar.php?id=<?php echo $id; ?>" autocomplete="off">
     <?php echo csrf_campo(); ?>
     <div class="adm-form-grid">
       <div class="adm-field span2">
@@ -117,11 +117,11 @@ $embedUrl = $isYT
         Guardar cambios
       </button>
       <button class="adm-btn adm-btn--danger" type="button"
-              onclick="confirmarBorrar('/admin/videos/borrar.php?id=<?php echo $id; ?>')">
+              onclick="confirmarBorrar('/bunker/videos/borrar.php?id=<?php echo $id; ?>')">
         Eliminar video
       </button>
     </div>
   </form>
 </div>
 
-<?php require __DIR__ . '/../../admin/includes/admin-footer.php'; ?>
+<?php require __DIR__ . '/../../bunker/includes/admin-footer.php'; ?>

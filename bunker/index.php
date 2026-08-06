@@ -17,7 +17,7 @@ if ($db) {
         'vistas'          => "SELECT COALESCE(SUM(vistas),0) FROM blog",
     ] as $key => $sql) {
         $r = $db->query($sql);
-        if ($r) { $r->bind_result($v); $r->fetch(); $stats[$key] = (int)$v; }
+        if ($r) { $row = $r->fetch_row(); $stats[$key] = (int)($row[0] ?? 0); }
     }
 }
 
@@ -40,7 +40,7 @@ require __DIR__ . '/includes/admin-layout.php';
     <h1>Dashboard</h1>
     <p>Bienvenido, <?php echo h($_SESSION['usuario']); ?>. Aquí tienes un resumen del sitio.</p>
   </div>
-  <a class="adm-btn adm-btn--primary" href="/admin/blog/crear.php">
+  <a class="adm-btn adm-btn--primary" href="/bunker/blog/crear.php">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
     Nuevo artículo
   </a>
@@ -89,7 +89,7 @@ require __DIR__ . '/includes/admin-layout.php';
 <div class="adm-table-wrap">
   <div class="adm-table-top">
     <strong style="font-size:.9rem">Últimos artículos</strong>
-    <a class="adm-btn adm-btn--ghost adm-btn--sm" href="/admin/blog/">Ver todos</a>
+    <a class="adm-btn adm-btn--ghost adm-btn--sm" href="/bunker/blog/">Ver todos</a>
   </div>
   <?php if (!empty($ultimos)): ?>
   <table class="adm-table">
@@ -107,7 +107,7 @@ require __DIR__ . '/includes/admin-layout.php';
         <?php echo $a['estado']==='publicado' ? 'Publicado' : 'Borrador'; ?></span></td>
       <td><div class="adm-table__actions">
         <a class="adm-btn adm-btn--ghost adm-btn--sm"
-           href="/admin/blog/editar.php?slug=<?php echo urlencode($a['slug']); ?>">Editar</a>
+           href="/bunker/blog/editar.php?slug=<?php echo urlencode($a['slug']); ?>">Editar</a>
         <a class="adm-btn adm-btn--ghost adm-btn--sm"
            href="/blog/<?php echo h($a['slug']); ?>" target="_blank">Ver</a>
       </div></td>
@@ -118,7 +118,7 @@ require __DIR__ . '/includes/admin-layout.php';
   <?php else: ?>
   <div class="adm-empty">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
-    <p>Aún no hay artículos. <a href="/admin/blog/crear.php" style="color:var(--gold)">Crea el primero.</a></p>
+    <p>Aún no hay artículos. <a href="/bunker/blog/crear.php" style="color:var(--gold)">Crea el primero.</a></p>
   </div>
   <?php endif; ?>
 </div>

@@ -1,11 +1,11 @@
 <?php
-require_once __DIR__ . '/../../admin/includes/auth.php';
+require_once __DIR__ . '/../../bunker/includes/auth.php';
 requiere_auth();
 require_once __DIR__ . '/../../includes/config/database.php';
 require_once __DIR__ . '/../../includes/functions/helpers.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !csrf_valido()) {
-    header('Location: /admin/videos/'); exit;
+    header('Location: /bunker/videos/'); exit;
 }
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)
    ?: filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
@@ -18,5 +18,5 @@ if ($id) {
         $st->execute();
     }
 }
-header('Location: /admin/videos/?ok=borrado');
+header('Location: /bunker/videos/?ok=borrado');
 exit;

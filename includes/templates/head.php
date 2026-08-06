@@ -17,8 +17,8 @@ $default_canonical= 'https://fredyarenasabogado.com/';
 // h() puede no estar cargada aún si helpers.php se carga después;
 // definimos versión local segura para este archivo.
 if (!function_exists('h')) {
-    function h(string $v): string {
-        return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
+    function h(?string $v): string {
+        return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8');
     }
 }
 
@@ -65,6 +65,9 @@ $canon = isset($page_canonical) ? h($page_canonical) : $default_canonical;
 <script defer src="/assets/js/scroll.js"></script>
 <?php if (!empty($cargar_contacto_js)): ?>
 <script defer src="/assets/js/contacto.js"></script>
+<?php endif; ?>
+<?php if (!empty($cargar_articulo_js)): ?>
+<script defer src="/assets/js/articulo.js"></script>
 <?php endif; ?>
 
 </head>

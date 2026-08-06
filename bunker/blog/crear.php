@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../admin/includes/auth.php';
+require_once __DIR__ . '/../../bunker/includes/auth.php';
 requiere_auth();
 require_once __DIR__ . '/../../includes/config/database.php';
 require_once __DIR__ . '/../../includes/functions/helpers.php';
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $nombre_img,$d['imagen_autor'],$d['estado']);
 
             if ($st->execute()) {
-                header('Location: /admin/blog/?ok=creado');
+                header('Location: /bunker/blog/?ok=creado');
                 exit;
             }
             $errores[] = 'Error al guardar en la base de datos.';
@@ -83,8 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $adm_title      = 'Nuevo artículo';
 $adm_nav_active = 'art-crear';
-require __DIR__ . '/../../admin/includes/admin-head.php';
-require __DIR__ . '/../../admin/includes/admin-layout.php';
+require __DIR__ . '/../../bunker/includes/admin-head.php';
+require __DIR__ . '/../../bunker/includes/admin-layout.php';
 ?>
 
 <div class="adm-page-head">
@@ -92,7 +92,7 @@ require __DIR__ . '/../../admin/includes/admin-layout.php';
     <h1>Nuevo artículo</h1>
     <p>Completa los campos y haz clic en "Publicar".</p>
   </div>
-  <a class="adm-btn adm-btn--ghost" href="/admin/blog/">← Volver al listado</a>
+  <a class="adm-btn adm-btn--ghost" href="/bunker/blog/">← Volver al listado</a>
 </div>
 
 <?php foreach ($errores as $e): ?>
@@ -100,7 +100,7 @@ require __DIR__ . '/../../admin/includes/admin-layout.php';
 <?php endforeach; ?>
 
 <div class="adm-form-wrap">
-  <form method="POST" action="/admin/blog/crear.php"
+  <form method="POST" action="/bunker/blog/crear.php"
         enctype="multipart/form-data" autocomplete="off">
     <?php echo csrf_campo(); ?>
 
@@ -208,7 +208,7 @@ require __DIR__ . '/../../admin/includes/admin-layout.php';
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
         Guardar artículo
       </button>
-      <a class="adm-btn adm-btn--ghost" href="/admin/blog/">Cancelar</a>
+      <a class="adm-btn adm-btn--ghost" href="/bunker/blog/">Cancelar</a>
     </div>
   </form>
 </div>
@@ -227,4 +227,4 @@ document.getElementById('slug').addEventListener('input', function(){
 });
 </script>
 
-<?php require __DIR__ . '/../../admin/includes/admin-footer.php'; ?>
+<?php require __DIR__ . '/../../bunker/includes/admin-footer.php'; ?>

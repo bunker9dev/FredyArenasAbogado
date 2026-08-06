@@ -1,11 +1,11 @@
 <?php
-require_once __DIR__ . '/../../admin/includes/auth.php';
+require_once __DIR__ . '/../../bunker/includes/auth.php';
 requiere_auth();
 require_once __DIR__ . '/../../includes/config/database.php';
 require_once __DIR__ . '/../../includes/functions/helpers.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !csrf_valido()) {
-    header('Location: /admin/blog/');
+    header('Location: /bunker/blog/');
     exit;
 }
 
@@ -32,5 +32,5 @@ if ($id) {
     }
 }
 
-header('Location: /admin/blog/?ok=borrado');
+header('Location: /bunker/blog/?ok=borrado');
 exit;

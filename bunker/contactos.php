@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../admin/includes/auth.php';
+require_once __DIR__ . '/../bunker/includes/auth.php';
 requiere_auth();
 require_once __DIR__ . '/../includes/config/database.php';
 require_once __DIR__ . '/../includes/functions/helpers.php';
@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrf_valido()) {
         $st = $db->prepare("UPDATE contacto SET leido=1 WHERE id=?");
         $st->bind_param('i', $mid); $st->execute();
     }
-    header('Location: /admin/contactos.php'); exit;
+    header('Location: /bunker/contactos.php'); exit;
 }
 
 $mensajes = [];
@@ -23,8 +23,8 @@ if ($db) {
 }
 
 $adm_title = 'Mensajes'; $adm_nav_active = 'contactos';
-require __DIR__ . '/../admin/includes/admin-head.php';
-require __DIR__ . '/../admin/includes/admin-layout.php';
+require __DIR__ . '/../bunker/includes/admin-head.php';
+require __DIR__ . '/../bunker/includes/admin-layout.php';
 ?>
 
 <div class="adm-page-head">
@@ -48,7 +48,7 @@ require __DIR__ . '/../admin/includes/admin-layout.php';
     <td><strong><?php echo h($m['nombre']); ?></strong></td>
     <td><a href="mailto:<?php echo h($m['email']); ?>" style="color:var(--gold)"><?php echo h($m['email']); ?></a></td>
     <td><?php echo h($m['celular']); ?></td>
-    <td style="max-width:220px;white-space:normal;font-size:.82rem;color:var(--ink-soft)"><?php echo h(mb_strimwidth($m['asesoria'],0,120,'…')); ?></td>
+    <td style="max-width:220px;white-space:normal;font-size:.82rem;color:var(--ink-soft)"><?php echo h(recortar($m["asesoria"],120)); ?></td>
     <td style="white-space:nowrap;font-size:.8rem;color:var(--ink-soft)"><?php echo date('d/m/Y H:i', strtotime($m['created_at'])); ?></td>
     <td>
       <div class="adm-table__actions">
@@ -76,4 +76,4 @@ require __DIR__ . '/../admin/includes/admin-layout.php';
 <?php endif; ?>
 </div>
 
-<?php require __DIR__ . '/../admin/includes/admin-footer.php'; ?>
+<?php require __DIR__ . '/../bunker/includes/admin-footer.php'; ?>

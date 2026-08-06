@@ -24,9 +24,9 @@ function fecha_es(string $fecha): string
 /* ── Seguridad / texto ──────────────────────────────────── */
 
 /** Escapa para HTML. Atajo de htmlspecialchars con ENT_QUOTES. */
-function h(string $v): string
+function h(?string $v): string
 {
-    return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8');
 }
 
 /** Quita saltos de línea de un valor (anti-inyección de cabeceras de correo). */
@@ -129,4 +129,19 @@ function guardar_feedback(int $articulo_id, string $valor): bool
 function url_whatsapp(string $mensaje = 'Hola Fredy, me interesa una asesoría, mi nombre es: '): string
 {
     return 'https://api.whatsapp.com/send?phone=573102225617&text=' . rawurlencode($mensaje);
+}
+
+
+/* ── Recortar texto de forma segura ──────────────────────── */
+/**
+ * Recorta un texto a N caracteres añadiendo '…'.
+ * Alternativa segura a mb_strimwidth por si mbstring no está.
+ */
+function recortar(?string $texto, int $max = 120, string $sufijo = '…'): string
+{
+    $texto = trim(strip_tags($texto ?? ''));
+    if (function_exists('mb_strimwidth')) {
+        return mb_strimwidth($texto, 0, $max, $sufijo);
+    }
+    return strlen($texto) > $max ? substr($texto, 0, $max - 1) . $sufijo : $texto;
 }
