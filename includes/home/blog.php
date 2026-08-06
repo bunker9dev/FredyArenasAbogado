@@ -8,13 +8,26 @@ $articulos_home = [];
 $db_home = db_connect();
 
 if ($db_home) {
-    $stmt = $db_home->prepare(
-        "SELECT titulo, slug, area, fecha, autor_nombre, autor_apellido, imagen
-         FROM blog
-         WHERE estado = 'publicado'
-         ORDER BY fecha DESC
-         LIMIT 6"
-    );
+    // Consulta compatible con la BD original Y con la migración aplicada.
+    // Detecta si las columnas nuevas (slug, area, estado) ya existen.
+    $cols_res = $db_home->query("SHOW COLUMNS FROM blog LIKE 'slug'");
+    $tiene_slug = $cols_res && $cols_res->num_rows > 0;
+
+    if ($tiene_slug) {
+        // BD migrada: usa slug, area y filtra por estado
+        $stmt = $db_home->prepare(
+            "SELECT titulo, slug, area, fecha, autor_nombre, autor_apellido, imagen
+             FROM blog WHERE estado = 'publicado'
+             ORDER BY fecha DESC LIMIT 6"
+        );
+    } else {
+        // BD original: sin slug, sin area, sin estado
+        $stmt = $db_home->prepare(
+            "SELECT titulo, NULL as slug, NULL as area, fecha,
+                    autor_nombre, autor_apellido, imagen
+             FROM blog ORDER BY fecha DESC LIMIT 6"
+        );
+    }
     $stmt->execute();
     $res = $stmt->get_result();
     while ($row = $res->fetch_assoc()) $articulos_home[] = $row;
@@ -41,15 +54,18 @@ if ($db_home) {
     <div class="cards rv">
       <?php foreach ($articulos_home as $a):
         $autor = trim(h($a['autor_nombre']) . ' ' . h($a['autor_apellido']));
-        $url   = '/blog/' . h($a['slug']);
-        $img   = imagen_blog($a['imagen'] ?? '');
+        // Compatibilidad: slug y area pueden ser NULL si la migración no se ha corrido
+        $slug_art = !empty($a['slug']) ? $a['slug'] : slugify($a['titulo']);
+        $area_art = !empty($a['area']) ? $a['area'] : 'Artículo';
+        $url      = '/blog/' . h($slug_art);
+        $img      = imagen_blog($a['imagen'] ?? '');
       ?>
       <article class="card">
         <a href="<?php echo $url; ?>" class="card__img">
           <img loading="lazy" src="<?php echo $img; ?>" alt="<?php echo h($a['titulo']); ?>">
         </a>
         <div class="card__body">
-          <span class="card__cat"><?php echo h($a['area']); ?></span>
+          <span class="card__cat"><?php echo h($area_art); ?></span>
           <h3><a href="<?php echo $url; ?>"><?php echo h($a['titulo']); ?></a></h3>
           <div class="card__meta">
             <span><?php echo fecha_es($a['fecha']); ?></span>

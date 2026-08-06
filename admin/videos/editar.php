@@ -1,0 +1,127 @@
+<?php
+require_once __DIR__ . '/../../admin/includes/auth.php';
+requiere_auth();
+require_once __DIR__ . '/../../includes/config/database.php';
+require_once __DIR__ . '/../../includes/functions/helpers.php';
+
+$areas = ['Derecho Administrativo','Derecho Disciplinario','Justicia Penal Militar',
+          'Derecho Laboral - Pensión','Responsabilidad Médica','Insolvencia','General'];
+
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+$db = db_connect();
+$v  = null;
+
+if ($db && $id) {
+    $st = $db->prepare("SELECT * FROM videos WHERE id=? LIMIT 1");
+    $st->bind_param('i', $id);
+    $st->execute();
+    $v = $st->get_result()->fetch_assoc();
+}
+if (!$v) { header('Location: /admin/videos/'); exit; }
+$d = $v;
+
+$errores = [];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!csrf_valido()) { $errores[] = 'Sesión expirada.'; }
+    else {
+        $d['titulo']       = trim($_POST['titulo']       ?? '');
+        $d['url_original'] = trim($_POST['url_original'] ?? '');
+        $d['video_id']     = trim($_POST['video_id']     ?? '');
+        $d['plataforma']   = $_POST['plataforma']==='tiktok'?'tiktok':'youtube';
+        $d['descripcion']  = trim($_POST['descripcion']  ?? '');
+        $d['area']         = trim($_POST['area']         ?? 'General');
+        $d['estado']       = $_POST['estado']==='borrador'?'borrador':'publicado';
+
+        if (!$d['titulo'])       $errores[] = 'El título es obligatorio.';
+        if (!$d['url_original']) $errores[] = 'La URL es obligatoria.';
+        if (!$d['video_id'])     $errores[] = 'No se pudo extraer el ID del video.';
+
+        if (empty($errores)) {
+            $st2 = $db->prepare("UPDATE videos SET titulo=?,plataforma=?,video_id=?,url_original=?,descripcion=?,area=?,estado=? WHERE id=?");
+            $st2->bind_param('sssssssi',
+                $d['titulo'],$d['plataforma'],$d['video_id'],
+                $d['url_original'],$d['descripcion'],$d['area'],$d['estado'],$id);
+            if ($st2->execute()) { header('Location: /admin/videos/?ok=editado'); exit; }
+            $errores[] = 'Error al guardar.';
+        }
+    }
+}
+
+$adm_title = 'Editar video'; $adm_nav_active = 'videos';
+require __DIR__ . '/../../admin/includes/admin-head.php';
+require __DIR__ . '/../../admin/includes/admin-layout.php';
+
+// Generar URL de embed actual
+$isYT    = $d['plataforma'] === 'youtube';
+$embedUrl = $isYT
+    ? 'https://www.youtube.com/embed/' . h($d['video_id'])
+    : 'https://www.tiktok.com/embed/v2/' . h($d['video_id']);
+?>
+
+<div class="adm-page-head">
+  <div><h1>Editar video</h1><p><?php echo h($v['titulo']); ?></p></div>
+  <a class="adm-btn adm-btn--ghost" href="/admin/videos/">← Volver</a>
+</div>
+
+<?php foreach ($errores as $e): ?>
+  <div class="adm-alert adm-alert--error"><?php echo h($e); ?></div>
+<?php endforeach; ?>
+
+<div class="adm-form-wrap">
+  <form method="POST" action="/admin/videos/editar.php?id=<?php echo $id; ?>" autocomplete="off">
+    <?php echo csrf_campo(); ?>
+    <div class="adm-form-grid">
+      <div class="adm-field span2">
+        <label>Vista previa actual</label>
+        <div class="video-preview" style="display:block">
+          <iframe id="video-iframe" src="<?php echo $embedUrl; ?>" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="adm-field span2">
+        <label for="url_original">URL del video *</label>
+        <input id="url_original" name="url_original" type="url"
+               value="<?php echo h($d['url_original']); ?>"
+               oninput="previewVideo(this)" required>
+      </div>
+      <div style="display:none">
+        <input id="video_id"   name="video_id"   type="hidden" value="<?php echo h($d['video_id']); ?>">
+        <input id="plataforma" name="plataforma" type="hidden" value="<?php echo h($d['plataforma']); ?>">
+      </div>
+      <div class="adm-field span2">
+        <label for="titulo">Título *</label>
+        <input id="titulo" name="titulo" type="text" value="<?php echo h($d['titulo']); ?>" required>
+      </div>
+      <div class="adm-field">
+        <label for="area">Área</label>
+        <select id="area" name="area">
+          <?php foreach ($areas as $ar): ?>
+          <option value="<?php echo h($ar); ?>" <?php echo $d['area']===$ar?'selected':''; ?>><?php echo h($ar); ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="adm-field">
+        <label for="estado">Estado</label>
+        <select id="estado" name="estado">
+          <option value="publicado" <?php echo $d['estado']==='publicado'?'selected':''; ?>>Publicado</option>
+          <option value="borrador"  <?php echo $d['estado']==='borrador' ?'selected':''; ?>>Borrador</option>
+        </select>
+      </div>
+      <div class="adm-field span2">
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" name="descripcion"><?php echo h($d['descripcion'] ?? ''); ?></textarea>
+      </div>
+    </div>
+    <div class="adm-form-actions">
+      <button class="adm-btn adm-btn--primary" type="submit">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+        Guardar cambios
+      </button>
+      <button class="adm-btn adm-btn--danger" type="button"
+              onclick="confirmarBorrar('/admin/videos/borrar.php?id=<?php echo $id; ?>')">
+        Eliminar video
+      </button>
+    </div>
+  </form>
+</div>
+
+<?php require __DIR__ . '/../../admin/includes/admin-footer.php'; ?>

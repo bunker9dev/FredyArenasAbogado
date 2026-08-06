@@ -14,10 +14,18 @@ $default_desc     = 'Fredy Antonio Arenas Gutiérrez, abogado en Neiva (Huila). 
 $default_image    = 'https://fredyarenasabogado.com/assets/img/perfil-fredyarenas5.webp';
 $default_canonical= 'https://fredyarenasabogado.com/';
 
-$title    = isset($page_title)     ? h($page_title)     : $default_title;
-$desc     = isset($page_desc)      ? h($page_desc)      : $default_desc;
-$image    = isset($page_og_image)  ? h($page_og_image)  : $default_image;
-$canon    = isset($page_canonical) ? h($page_canonical) : $default_canonical;
+// h() puede no estar cargada aún si helpers.php se carga después;
+// definimos versión local segura para este archivo.
+if (!function_exists('h')) {
+    function h(string $v): string {
+        return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
+    }
+}
+
+$title = isset($page_title)     ? h($page_title)     : $default_title;
+$desc  = isset($page_desc)      ? h($page_desc)      : $default_desc;
+$image = isset($page_og_image)  ? h($page_og_image)  : $default_image;
+$canon = isset($page_canonical) ? h($page_canonical) : $default_canonical;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -57,9 +65,6 @@ $canon    = isset($page_canonical) ? h($page_canonical) : $default_canonical;
 <script defer src="/assets/js/scroll.js"></script>
 <?php if (!empty($cargar_contacto_js)): ?>
 <script defer src="/assets/js/contacto.js"></script>
-<?php endif; ?>
-<?php if (!empty($cargar_articulo_js)): ?>
-<script defer src="/assets/js/articulo.js"></script>
 <?php endif; ?>
 
 </head>
