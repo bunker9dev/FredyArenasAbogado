@@ -18,7 +18,9 @@ $nombre = $email = $celular = $asesoria = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Honeypot: si el campo oculto tiene valor, es un bot
+    // Honeypot: si el campo oculto tiene valor, es un bot.
+    // No avisamos nada raro: simplemente lo tratamos como "enviado"
+    // para no darle pistas al bot de que fue detectado.
     if (!empty($_POST['website'])) {
         header('Location: /index.php?ok=1#contacto');
         exit;
@@ -29,11 +31,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $celular  = limpiar_cabecera($_POST['celular']  ?? '');
     $asesoria = trim($_POST['asesoria']             ?? '');
 
-    // Validaciones
+    // Validaciones normales
     if (!$nombre)                                    $errores[] = 'El nombre es obligatorio.';
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errores[] = 'El correo no es válido.';
     if (!$celular)                                   $errores[] = 'El celular es obligatorio.';
     if (!$asesoria)                                  $errores[] = 'Cuéntanos el tema de la asesoría.';
+
+    // Verificación humana (pregunta de suma + tiempo mínimo)
+    $cap_a    = (int)($_POST['cap_a']    ?? 0);
+    $cap_b    = (int)($_POST['cap_b']    ?? 0);
+    $cap_ts   = (int)($_POST['cap_ts']   ?? 0);
+    $cap_firma = $_POST['cap_firma']     ?? '';
+    $cap_resp  = $_POST['cap_resp']      ?? '';
+
+    $captcha = validar_captcha($cap_a, $cap_b, $cap_ts, $cap_firma, $cap_resp);
+    if (!$captcha['ok']) $errores[] = $captcha['motivo'];
+
+    // Límite de envíos por IP (evita ráfagas de spam)
+    $ip_hash = ip_hash_visitante();
+    if (empty($errores) && limite_contacto_superado($ip_hash)) {
+        $errores[] = 'Has enviado varios mensajes seguidos. Espera un momento antes de intentar de nuevo.';
+    }
 
     if (empty($errores)) {
 
@@ -41,15 +59,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $db = db_connect();
         if ($db) {
             $stmt = $db->prepare(
-                "INSERT INTO contacto (nombre, email, celular, asesoria) VALUES (?, ?, ?, ?)"
+                "INSERT INTO contacto (nombre, email, celular, ip_hash, asesoria) VALUES (?, ?, ?, ?, ?)"
             );
-            $stmt->bind_param('ssss', $nombre, $email, $celular, $asesoria);
+            $stmt->bind_param('sssss', $nombre, $email, $celular, $ip_hash, $asesoria);
             $stmt->execute();
         }
 
-        // Enviar correo con cabeceras seguras (From fijo del dominio)
-        $dest    = 'asesorias@fredyarenasabogado.com';
-        $asunto  = 'Nueva solicitud de asesoría — fredyarenasabogado.com';
+        // Enviar correo con cabeceras seguras (From fijo del dominio).
+        // Se envían DOS correos independientes (en vez de usar Cc:)
+        // porque el hosting descarta el encabezado Cc en los envíos
+        // a dominios externos (Gmail/Hotmail) — así cada uno llega
+        // como un envío directo normal.
+        $asunto  = 'Nueva solicitud de asesoría';
         $cuerpo  = "<h2>Solicitud de asesoría</h2>"
                  . "<p><strong>Nombre:</strong> "  . htmlspecialchars($nombre)   . "</p>"
                  . "<p><strong>Correo:</strong> "  . htmlspecialchars($email)    . "</p>"
@@ -61,12 +82,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  . "From: Sitio Web <no-reply@fredyarenasabogado.com>\r\n"
                  . "Reply-To: " . $email . "\r\n";
 
-        @mail($dest, $asunto, $cuerpo, $headers);
+        @mail('asesorias@fredyarenasabogado.com', $asunto, $cuerpo, $headers);
+        @mail('fredy.arenas1972@hotmail.com',              $asunto, $cuerpo, $headers);
 
         header('Location: /index.php?ok=1#contacto');
         exit;
     }
 }
+
+// Captcha para el formulario que se va a mostrar (nuevo en cada carga,
+// incluso si hubo errores — así no se reutiliza uno ya usado).
+$captcha_form = generar_captcha();
 
 /* ── 3) Variables para el <head> ──────────────────────── */
 $page_title     = 'Fredy Arenas · Abogado en Neiva — Derecho administrativo, disciplinario y penal militar';
@@ -74,6 +100,7 @@ $page_desc      = 'Fredy Antonio Arenas Gutiérrez, abogado en Neiva (Huila). Es
 $page_canonical = 'https://fredyarenasabogado.com/';
 $cargar_contacto_js = true;   // activa contacto.js en el head
 $current_page   = 'home';
+$preload_imagen = '/assets/img/perfil-fredyarenas5.webp';   // foto del hero (LCP)
 
 /* ── 4) Salida HTML ───────────────────────────────────── */
 require __DIR__ . '/includes/templates/head.php';
@@ -112,6 +139,7 @@ echo '<script type="application/ld+json">' . json_encode([
   <?php require __DIR__ . '/includes/home/perfil.php';    ?>
   <?php require __DIR__ . '/includes/home/servicios.php'; ?>
   <?php require __DIR__ . '/includes/home/blog.php';      ?>
+  <?php require __DIR__ . '/includes/home/videos.php';    ?>
   <?php require __DIR__ . '/includes/home/contacto.php';  ?>
 </main>
 

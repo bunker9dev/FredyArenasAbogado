@@ -156,6 +156,41 @@ function imagen_blog_url(string $base = '', string $default = '/assets/img/og-de
 }
 
 
+/* ── Videos ─────────────────────────────────────────────── */
+
+/**
+ * Consulta la API pública de oEmbed de TikTok para obtener la miniatura
+ * real del video (el fotograma con el que arranca). Se usa al crear o
+ * editar un video en el panel, así la tarjeta pública muestra el inicio
+ * real del video en vez de un logo genérico.
+ *
+ * Devuelve la URL de la miniatura, o '' si no se pudo obtener
+ * (la tarjeta simplemente usa el logo del despacho como respaldo).
+ */
+function obtener_miniatura_tiktok(string $url_original): string
+{
+    if ($url_original === '' || !function_exists('curl_init')) return '';
+
+    $endpoint = 'https://www.tiktok.com/oembed?url=' . urlencode($url_original);
+
+    $ch = curl_init($endpoint);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 5,
+        CURLOPT_CONNECTTIMEOUT => 3,
+        CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; FredyArenasBot/1.0)',
+    ]);
+    $respuesta = curl_exec($ch);
+    $codigo    = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($codigo !== 200 || !$respuesta) return '';
+
+    $datos = json_decode($respuesta, true);
+    return $datos['thumbnail_url'] ?? '';
+}
+
+
 /* ── Vistas ──────────────────────────────────────────────── */
 
 /**
@@ -190,6 +225,107 @@ function registrar_vista(int $articulo_id): void
         $upd->bind_param('i', $articulo_id);
         $upd->execute();
     }
+}
+
+
+/**
+ * Registra una vista real de un video (cuando el usuario le da clic para
+ * reproducirlo), una por IP cada 4 horas — mismo criterio que los artículos.
+ */
+function registrar_vista_video(int $video_id): void
+{
+    $db = db_connect();
+    if (!$db) return;
+
+    $ip_hash = hash('sha256', $_SERVER['REMOTE_ADDR'] ?? '');
+    $ventana = date('Y-m-d H:i:s', strtotime('-4 hours'));
+
+    $check = $db->prepare(
+        "SELECT id FROM vistas_log_videos
+         WHERE video_id = ? AND ip_hash = ? AND created_at > ?"
+    );
+    $check->bind_param('iss', $video_id, $ip_hash, $ventana);
+    $check->execute();
+    $check->store_result();
+
+    if ($check->num_rows === 0) {
+        $ins = $db->prepare("INSERT INTO vistas_log_videos (video_id, ip_hash) VALUES (?, ?)");
+        $ins->bind_param('is', $video_id, $ip_hash);
+        $ins->execute();
+
+        $upd = $db->prepare("UPDATE videos SET vistas = vistas + 1 WHERE id = ?");
+        $upd->bind_param('i', $video_id);
+        $upd->execute();
+    }
+}
+
+
+/* ── Antispam del formulario de contacto ───────────────────── */
+
+/**
+ * Genera una pregunta de suma simple ("¿Cuánto es 4 + 3?"), firmada
+ * con SITE_SECRET para que no se pueda falsificar la respuesta sin
+ * conocer la clave del servidor, y con marca de tiempo para detectar
+ * envíos "demasiado rápidos" (típico de bots).
+ */
+function generar_captcha(): array
+{
+    $a  = random_int(1, 9);
+    $b  = random_int(1, 9);
+    $ts = time();
+    $firma = hash_hmac('sha256', "$a|$b|$ts", SITE_SECRET);
+    return compact('a', 'b', 'ts', 'firma');
+}
+
+/**
+ * Valida la respuesta del captcha. Devuelve ['ok'=>bool,'motivo'=>string].
+ * Rechaza: firma alterada, respuesta incorrecta, envío en menos de 3
+ * segundos (imposible para un humano) o formulario con más de 1 hora
+ * (evita reintentos con una página vieja guardada en caché).
+ */
+function validar_captcha(int $a, int $b, int $ts, string $firma, $respuesta): array
+{
+    $esperada = hash_hmac('sha256', "$a|$b|$ts", SITE_SECRET);
+    if (!hash_equals($esperada, $firma)) {
+        return ['ok' => false, 'motivo' => 'Verificación inválida, recarga la página e inténtalo de nuevo.'];
+    }
+    $transcurrido = time() - $ts;
+    if ($transcurrido < 3) {
+        return ['ok' => false, 'motivo' => 'Envío demasiado rápido. Inténtalo de nuevo.'];
+    }
+    if ($transcurrido > 3600) {
+        return ['ok' => false, 'motivo' => 'El formulario expiró, recarga la página e inténtalo de nuevo.'];
+    }
+    if ((int)$respuesta !== ($a + $b)) {
+        return ['ok' => false, 'motivo' => 'La respuesta de verificación no es correcta.'];
+    }
+    return ['ok' => true, 'motivo' => ''];
+}
+
+/** Hash de la IP del visitante (no guardamos la IP real, solo su huella). */
+function ip_hash_visitante(): string
+{
+    return hash('sha256', $_SERVER['REMOTE_ADDR'] ?? '');
+}
+
+/**
+ * true si esta IP ya envió demasiados mensajes de contacto en la
+ * última hora (por defecto, más de 3).
+ */
+function limite_contacto_superado(string $ip_hash, int $max = 3, int $ventana_seg = 3600): bool
+{
+    $db = db_connect();
+    if (!$db) return false;
+
+    $desde = date('Y-m-d H:i:s', time() - $ventana_seg);
+    $st = $db->prepare("SELECT COUNT(*) FROM contacto WHERE ip_hash = ? AND created_at > ?");
+    $st->bind_param('ss', $ip_hash, $desde);
+    $st->execute();
+    $st->bind_result($n);
+    $st->fetch();
+    $st->close();
+
+    return $n >= $max;
 }
 
 

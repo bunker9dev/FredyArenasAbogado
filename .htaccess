@@ -19,8 +19,11 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^blog/([a-z0-9-]+)/?$ /blog/articulo.php?slug=$1 [L,QSA]
 
+# ── Bloquear carpetas y archivos ocultos (.git, .vscode...) ──
+RewriteRule (^|/)\.(?!well-known/) - [F,L]
+
 # ── Bloquear archivos sensibles ─────────────────────────────
-<FilesMatch "\.(sql|log|md|env|json|lock|map|sh)$">
+<FilesMatch "\.(sql|log|md|env|json|lock|map|sh|zip|bak|rar)$">
   <IfModule mod_authz_core.c>
     Require all denied
   </IfModule>
@@ -43,6 +46,8 @@ RewriteRule ^blog/([a-z0-9-]+)/?$ /blog/articulo.php?slug=$1 [L,QSA]
 # ── Caché de assets estáticos ────────────────────────────────
 <IfModule mod_expires.c>
   ExpiresActive On
+  ExpiresByType image/avif              "access plus 1 year"
+  ExpiresByType font/woff2              "access plus 1 year"
   ExpiresByType image/webp              "access plus 1 year"
   ExpiresByType image/png               "access plus 1 year"
   ExpiresByType image/jpeg              "access plus 1 year"

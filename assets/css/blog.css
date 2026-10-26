@@ -56,7 +56,7 @@
   font-size:      .66rem;
   letter-spacing: .16em;
   text-transform: uppercase;
-  color:          var(--gold);
+  color:          var(--gold-text);
   font-weight:    600;
   margin-bottom:  .6rem;
 }
@@ -213,3 +213,115 @@
 }
 .pag-btn:hover { border-color: var(--ink); }
 .pag-info { font-size: .85rem; color: var(--ink-soft); }
+
+/* ── Sección Videos (home + /videos.php) ─────────────────── */
+.video-cards {
+  grid-template-columns: repeat(3, 1fr);
+}
+.video-card__player {
+  position:   relative;
+  width:      100%;
+  background: #000;
+}
+.video-card__player--yt {
+  aspect-ratio: 16 / 9;
+  overflow:     hidden;
+}
+.video-card__player--yt iframe {
+  position: absolute;
+  inset:    0;
+  width:    100%;
+  height:   100%;
+  border:   0;
+}
+.video-card__player--tt {
+  min-height: 580px;
+  display:    flex;
+  justify-content: center;
+}
+.video-card__player--tt .tiktok-embed { border-radius: 0; }
+
+/* Facade: miniatura + botón de play (antes de cargar el reproductor real) */
+.video-card__facade {
+  position: absolute;
+  inset:    0;
+  width:    100%;
+  height:   100%;
+  border:   0;
+  padding:  0;
+  cursor:   pointer;
+  background: #000;
+}
+.video-card__player--tt .video-card__facade { position: relative; aspect-ratio: 3 / 4; }
+.video-card__thumb {
+  width:      100%;
+  height:     100%;
+  object-fit: cover;
+  opacity:    .82;
+  display:    block;
+}
+.video-card__player--tt .video-card__thumb {
+  object-fit: contain;
+  background: #111;
+}
+.video-card__playicon {
+  position:      absolute;
+  top:           50%;
+  left:          50%;
+  transform:     translate(-50%, -50%);
+  width:         56px;
+  height:        56px;
+  border-radius: 50%;
+  background:    var(--gold);
+  color:         #fff;
+  display:       flex;
+  align-items:   center;
+  justify-content: center;
+  transition:    transform var(--tr-fast);
+}
+.video-card__facade:hover .video-card__playicon { transform: translate(-50%, -50%) scale(1.08); }
+
+@media (max-width: 900px) {
+  .video-cards { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 620px) {
+  .video-cards { grid-template-columns: 1fr; }
+}
+
+/* Toast (compartido con articulo.css, replicado aquí para home y /videos.php) */
+.toast {
+  position:   fixed;
+  bottom:     24px;
+  left:       50%;
+  transform:  translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color:      var(--paper);
+  font-size:  .85rem;
+  padding:    .7rem 1.2rem;
+  border-radius: var(--r-card);
+  opacity:    0;
+  pointer-events: none;
+  transition: opacity .28s, transform .28s;
+  z-index:    80;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Compartir dentro de la tarjeta de video */
+.video-card__share {
+  display:    flex;
+  gap:        .5rem;
+  margin-top: .9rem;
+  flex-wrap:  wrap;
+}
+.share-btn--sm { padding: .42rem .8rem; font-size: .76rem; }
+
+/* Aviso de "activa el audio" para TikTok */
+.video-card__aviso-audio {
+  display:       block;
+  font-size:     .74rem;
+  color:         var(--ink-soft);
+  padding:       .5rem .9rem 0;
+  transition:    opacity .3s;
+}
+.video-card__aviso-audio--oculto { opacity: 0; height: 0; padding: 0; overflow: hidden; }

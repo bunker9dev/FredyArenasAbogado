@@ -9,7 +9,8 @@ $wsp = url_whatsapp();
   <div class="wrap hero__grid">
 
     <!-- Texto -->
-    <div class="hero__text rv">
+    <!-- Sin la clase "rv": lo primero que se ve no debe esperar a JavaScript -->
+    <div class="hero__text">
       <p class="eyebrow">Abogado · Neiva, Huila</p>
       <h1>Asesoría legal <em>especializada</em>, con criterio.</h1>
       <p class="hero__sub">
@@ -32,10 +33,9 @@ $wsp = url_whatsapp();
     </div>
 
     <!-- Retrato -->
-    <div class="hero__portrait rv">
+    <div class="hero__portrait">
       <picture>
-        <source srcset="/assets/img/perfil-fredyarenas5.webp" type="image/webp">
-        <img src="/assets/img/perfil-fredyarenas5.jpg"
+        <img src="/assets/img/perfil-fredyarenas5.webp"
              width="490" height="569"
              alt="Fredy Antonio Arenas Gutiérrez, abogado"
              fetchpriority="high">

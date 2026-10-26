@@ -27,12 +27,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$d['video_id'])     $errores[] = 'No se pudo extraer el ID del video. Verifica la URL.';
 
         if (empty($errores)) {
+            // Si es TikTok, pedirle a su API la miniatura real del video
+            // (el fotograma inicial), para no mostrar el logo genérico.
+            $thumbnail_url = $d['plataforma'] === 'tiktok'
+                ? obtener_miniatura_tiktok($d['url_original'])
+                : '';
+
             $db = db_connect();
             $st = $db->prepare(
-                "INSERT INTO videos (titulo, plataforma, video_id, url_original, descripcion, area, estado)
-                 VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $st->bind_param('sssssss',
-                $d['titulo'],$d['plataforma'],$d['video_id'],
+                "INSERT INTO videos (titulo, plataforma, video_id, thumbnail_url, url_original, descripcion, area, estado)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $st->bind_param('ssssssss',
+                $d['titulo'],$d['plataforma'],$d['video_id'],$thumbnail_url,
                 $d['url_original'],$d['descripcion'],$d['area'],$d['estado']);
             if ($st->execute()) { header('Location: /bunker/videos/?ok=creado'); exit; }
             $errores[] = 'Error al guardar en la base de datos.';

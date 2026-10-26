@@ -44,8 +44,8 @@
   font-size:       var(--fs-xs);
   color:           #8b8f98;
 }
-.footer__bottom a { color: var(--gold-soft); }
-.footer__bottom a:hover { text-decoration: underline; }
+.footer__bottom a { color: var(--gold-soft); text-decoration: underline; text-underline-offset: 3px; }
+.footer__bottom a:hover { text-decoration-thickness: 2px; }
 
 /* ── WhatsApp flotante ───────────────────────────────────── */
 .wa-float {

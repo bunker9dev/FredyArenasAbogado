@@ -16,7 +16,7 @@
   font-style:  italic;
   color:       var(--ink);
 }
-.perfil__quote span { color: var(--gold); }
+.perfil__quote span { color: var(--gold-text); }
 
 .perfil__body p {
   margin-bottom: 1.1rem;
@@ -44,7 +44,7 @@
 .serv__idx {
   font-family: var(--font-serif);
   font-size:   .85rem;
-  color:       var(--gold);
+  color:       var(--gold-text);
   flex-shrink: 0;
   padding-top: .35rem;
 }

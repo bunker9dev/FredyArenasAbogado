@@ -13,6 +13,10 @@ define('DB_PASS', 'TU_CLAVE_SEGURA_AQUI');             // ← nunca subir al rep
 define('DB_NAME', 'fredyarenasabogado_db');
 define('DB_PORT', 3306);
 
+// Clave secreta del sitio (para firmar el captcha del formulario de contacto).
+// Cámbiala por una cadena larga y aleatoria propia — no uses esta de ejemplo.
+define('SITE_SECRET', 'cambia-esto-por-una-cadena-larga-y-aleatoria-propia-2026');
+
 /**
  * Devuelve una conexión MySQLi activa o false si falla.
  * Silencia el error con @ para no exponer credenciales;

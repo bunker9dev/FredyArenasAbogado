@@ -11,6 +11,7 @@ $nombre   = $nombre   ?? '';
 $email    = $email    ?? '';
 $celular  = $celular  ?? '';
 $asesoria = $asesoria ?? '';
+$captcha_form = $captcha_form ?? generar_captcha();
 ?>
 <!-- ── Sección Contacto ────────────────────────────────── -->
 <section class="blk blk--dark" id="contacto">
@@ -73,7 +74,15 @@ $asesoria = $asesoria ?? '';
                   placeholder="Cuéntame brevemente tu caso"
                   required><?php echo h($asesoria); ?></textarea>
 
-        <!-- Honeypot anti-spam (campo invisible) -->
+        <label for="c-captcha">Verificación: ¿cuánto es <?php echo (int)$captcha_form['a']; ?> + <?php echo (int)$captcha_form['b']; ?>?</label>
+        <input id="c-captcha" name="cap_resp" type="text" inputmode="numeric"
+               placeholder="Escribe el resultado" required>
+        <input type="hidden" name="cap_a"     value="<?php echo (int)$captcha_form['a']; ?>">
+        <input type="hidden" name="cap_b"     value="<?php echo (int)$captcha_form['b']; ?>">
+        <input type="hidden" name="cap_ts"    value="<?php echo (int)$captcha_form['ts']; ?>">
+        <input type="hidden" name="cap_firma" value="<?php echo h($captcha_form['firma']); ?>">
+
+        <!-- Honeypot anti-spam (campo invisible, oculto por CSS .hp) -->
         <div class="hp" aria-hidden="true">
           <label>No llenar
             <input type="text" name="website" tabindex="-1" autocomplete="off">
@@ -83,7 +92,7 @@ $asesoria = $asesoria ?? '';
         <button class="btn btn--gold" type="submit">Enviar solicitud</button>
         <p class="consent">
           Al enviar autorizas el tratamiento de tus datos conforme a la
-          <a href="/privacidad.php" style="color:var(--gold-soft)">política de privacidad</a>.
+          <a href="/privacidad.php" style="color:var(--gold-soft);text-decoration:underline">política de privacidad</a>.
         </p>
       </form>
     </div>

@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../includes/functions/helpers.php';
 
 $videos = []; $db = db_connect();
 if ($db) {
-    $res = $db->query("SELECT id, titulo, plataforma, video_id, area, estado, created_at FROM videos ORDER BY created_at DESC");
+    $res = $db->query("SELECT id, titulo, plataforma, video_id, thumbnail_url, area, estado, vistas, created_at FROM videos ORDER BY created_at DESC");
     if ($res) while ($r = $res->fetch_assoc()) $videos[] = $r;
 }
 
@@ -29,17 +29,20 @@ require __DIR__ . '/../../bunker/includes/admin-layout.php';
 <div class="adm-table-wrap">
 <?php if (!empty($videos)): ?>
 <table class="adm-table">
-  <thead><tr><th>Miniatura</th><th>Título</th><th>Plataforma</th><th>Área</th><th>Estado</th><th></th></tr></thead>
+  <thead><tr><th>Miniatura</th><th>Título</th><th>Plataforma</th><th>Área</th><th>Vistas</th><th>Estado</th><th></th></tr></thead>
   <tbody>
   <?php foreach ($videos as $v):
     $isYT  = $v['plataforma'] === 'youtube';
-    $thumb = $isYT ? "https://img.youtube.com/vi/{$v['video_id']}/mqdefault.jpg" : '/assets/img/logo_fredyarenasabogado_412x366.webp';
+    $thumb = $isYT
+        ? "https://img.youtube.com/vi/{$v['video_id']}/mqdefault.jpg"
+        : (!empty($v['thumbnail_url']) ? $v['thumbnail_url'] : '/assets/img/logo_fredyarenasabogado_412x366.webp');
   ?>
   <tr>
     <td><img class="adm-table__img" src="<?php echo h($thumb); ?>" alt="" onerror="this.src='/assets/img/logo_fredyarenasabogado_412x366.webp'"></td>
     <td><span class="adm-table__title"><?php echo h($v['titulo']); ?></span></td>
     <td><span class="adm-badge adm-badge--<?php echo $isYT?'yt':'tt'; ?>"><?php echo $isYT?'YouTube':'TikTok'; ?></span></td>
     <td><span class="adm-table__area"><?php echo h($v['area']); ?></span></td>
+    <td><?php echo (int)($v['vistas'] ?? 0); ?></td>
     <td><span class="adm-badge adm-badge--<?php echo $v['estado']==='publicado'?'pub':'bor'; ?>"><?php echo $v['estado']==='publicado'?'Publicado':'Borrador'; ?></span></td>
     <td><div class="adm-table__actions">
       <a class="adm-btn adm-btn--ghost adm-btn--sm" href="/bunker/videos/editar.php?id=<?php echo (int)$v['id']; ?>">Editar</a>

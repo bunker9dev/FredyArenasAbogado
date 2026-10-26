@@ -34,6 +34,7 @@ function nav_active(string $page, string $current): string {
         <li><a href="/#perfil"<?php echo nav_active('perfil',    $current_page); ?>>Perfil</a></li>
         <li><a href="/#servicios"<?php echo nav_active('servicios', $current_page); ?>>Servicios</a></li>
         <li><a href="/blog.php"<?php echo nav_active('blog',      $current_page); ?>>Blog</a></li>
+        <li><a href="/videos.php"<?php echo nav_active('videos',    $current_page); ?>>Videos</a></li>
         <li><a href="/#contacto"<?php echo nav_active('contacto', $current_page); ?>>Contacto</a></li>
       </ul>
     </nav>
@@ -54,6 +55,7 @@ function nav_active(string $page, string $current): string {
     <a href="/#perfil">Perfil</a>
     <a href="/#servicios">Servicios</a>
     <a href="/blog.php">Blog</a>
+    <a href="/videos.php">Videos</a>
     <a href="/#contacto">Contacto</a>
     <a href="/#contacto" style="color:var(--gold)">Agenda una cita →</a>
   </nav>

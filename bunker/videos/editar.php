@@ -37,9 +37,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$d['video_id'])     $errores[] = 'No se pudo extraer el ID del video.';
 
         if (empty($errores)) {
-            $st2 = $db->prepare("UPDATE videos SET titulo=?,plataforma=?,video_id=?,url_original=?,descripcion=?,area=?,estado=? WHERE id=?");
-            $st2->bind_param('sssssssi',
-                $d['titulo'],$d['plataforma'],$d['video_id'],
+            // Si es TikTok, refrescar la miniatura real desde su API
+            $thumbnail_url = $d['plataforma'] === 'tiktok'
+                ? obtener_miniatura_tiktok($d['url_original'])
+                : '';
+
+            $st2 = $db->prepare("UPDATE videos SET titulo=?,plataforma=?,video_id=?,thumbnail_url=?,url_original=?,descripcion=?,area=?,estado=? WHERE id=?");
+            $st2->bind_param('ssssssssi',
+                $d['titulo'],$d['plataforma'],$d['video_id'],$thumbnail_url,
                 $d['url_original'],$d['descripcion'],$d['area'],$d['estado'],$id);
             if ($st2->execute()) { header('Location: /bunker/videos/?ok=editado'); exit; }
             $errores[] = 'Error al guardar.';
@@ -74,7 +79,14 @@ $embedUrl = $isYT
       <div class="adm-field span2">
         <label>Vista previa actual</label>
         <div class="video-preview" style="display:block">
+          <?php if ($isYT): ?>
           <iframe id="video-iframe" src="<?php echo $embedUrl; ?>" allowfullscreen></iframe>
+          <?php else: ?>
+          <blockquote class="tiktok-embed" cite="<?php echo h($d['url_original']); ?>"
+                      data-video-id="<?php echo h($d['video_id']); ?>"
+                      style="max-width:100%;min-width:100%;margin:0"><section></section></blockquote>
+          <script async src="https://www.tiktok.com/embed.js"></script>
+          <?php endif; ?>
         </div>
       </div>
       <div class="adm-field span2">

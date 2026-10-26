@@ -32,7 +32,7 @@
   object-fit:    contain;
   border-radius: 50%;
 }
-.nav__brand span { color: var(--gold); font-weight: 400; }
+.nav__brand span { color: var(--gold-text); font-weight: 400; }
 
 /* Menú desktop */
 .nav__menu {

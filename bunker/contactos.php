@@ -6,9 +6,16 @@ require_once __DIR__ . '/../includes/functions/helpers.php';
 
 $db = db_connect();
 
-// Marcar como leído
+// Marcar como leído / Borrar
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrf_valido()) {
     $mid = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+
+    if ($mid && $db && isset($_POST['borrar'])) {
+        $st = $db->prepare("DELETE FROM contacto WHERE id=?");
+        $st->bind_param('i', $mid); $st->execute();
+        header('Location: /bunker/contactos.php?ok=borrado'); exit;
+    }
+
     if ($mid && $db) {
         $st = $db->prepare("UPDATE contacto SET leido=1 WHERE id=?");
         $st->bind_param('i', $mid); $st->execute();
@@ -62,6 +69,13 @@ require __DIR__ . '/../bunker/includes/admin-layout.php';
           <button class="adm-btn adm-btn--ghost adm-btn--sm" type="submit">Marcar leído</button>
         </form>
         <?php endif; ?>
+        <form method="POST" style="display:inline"
+              onsubmit="return confirm('¿Borrar este mensaje? Esta acción no se puede deshacer.');">
+          <?php echo csrf_campo(); ?>
+          <input type="hidden" name="id" value="<?php echo (int)$m['id']; ?>">
+          <input type="hidden" name="borrar" value="1">
+          <button class="adm-btn adm-btn--danger adm-btn--sm" type="submit">Borrar</button>
+        </form>
       </div>
     </td>
   </tr>

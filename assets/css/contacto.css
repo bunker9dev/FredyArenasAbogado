@@ -62,6 +62,17 @@
   min-height: 70px;
 }
 
+/* Honeypot: oculto fuera de pantalla, no con display:none (algunos
+   bots ignoran display:none pero sí llenan campos "invisibles" así). */
+.hp {
+  position: absolute;
+  left:     -9999px;
+  top:      -9999px;
+  width:    1px;
+  height:   1px;
+  overflow: hidden;
+}
+
 .contacto-form .btn--gold {
   margin-top: 1.8rem;
   width:      100%;
