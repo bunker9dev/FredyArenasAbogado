@@ -30,12 +30,20 @@ $canon = isset($page_canonical) ? h($page_canonical) : $default_canonical;
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-VVWYYQJMMR"></script>
+<!-- Google Analytics: se registra la visita de inmediato (dataLayer), pero el
+     script de Google (~150 KB) se descarga DESPUÉS de mostrar la página -->
 <script>
   window.dataLayer=window.dataLayer||[];
   function gtag(){dataLayer.push(arguments);}
   gtag('js',new Date());gtag('config','G-VVWYYQJMMR');
+  window.addEventListener('load',function(){
+    setTimeout(function(){
+      var s=document.createElement('script');
+      s.async=true;
+      s.src='https://www.googletagmanager.com/gtag/js?id=G-VVWYYQJMMR';
+      document.head.appendChild(s);
+    },1200);
+  });
 </script>
 
 <meta charset="UTF-8">
@@ -69,12 +77,10 @@ $canon = isset($page_canonical) ? h($page_canonical) : $default_canonical;
 <link rel="preload" as="style" href="<?php echo $fuentes; ?>" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="<?php echo $fuentes; ?>"></noscript>
 
-<!-- Hojas de estilo enlazadas directamente: se descargan EN PARALELO.
-     (Antes app.css las encadenaba con @import, una detrás de otra.)
-     app.css se conserva tal cual por si el panel lo usa. -->
-<?php foreach (['variables','utilidades','botones','header','hero','servicios','blog','contacto','footer','articulo','responsive'] as $css): ?>
-<link rel="stylesheet" href="/assets/css/<?php echo $css; ?>.css">
-<?php endforeach; ?>
+<!-- UN solo archivo CSS, unido y minificado con:  php assets/css/construir.php
+     El ?v= cambia cada vez que se regenera, así los navegadores no usan una versión vieja. -->
+<?php $css_sitio = __DIR__ . '/../../assets/css/sitio.min.css'; ?>
+<link rel="stylesheet" href="/assets/css/sitio.min.css?v=<?php echo is_file($css_sitio) ? filemtime($css_sitio) : '1'; ?>">
 
 <!-- JS módulos (defer = no bloquean el render) -->
 <script defer src="/assets/js/app.js"></script>
